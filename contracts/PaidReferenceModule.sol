@@ -8,12 +8,13 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {InfluencerRankingContract} from "./InfluencerRankingContract.sol";
 
 /**
- * @title InfluencerReferenceModule
+ * @title PaidReferenceModule
  *
  * @notice A module that allows paying influencers for distributing a post.
  */
-contract InfluencerReferenceModule is ModuleBase, IReferenceModule {
+contract PaidReferenceModule is ModuleBase, IReferenceModule {
     InfluencerRankingContract rankingContract;
+    mapping (address => uint) pubBudgets; 
 
     constructor(address hub, address rankingContractAddr) ModuleBase(hub) {
         rankingContract = InfluencerRankingContract(rankingContractAddr);
@@ -26,8 +27,10 @@ contract InfluencerReferenceModule is ModuleBase, IReferenceModule {
         uint256 profileId,
         uint256 pubId,
         bytes calldata data
-    ) external pure override returns (bytes memory) {
-        return new bytes(0);
+    ) external override payable returns (bytes memory) {
+        pubBudgets[pubId] = msg.value;
+
+        return new bytes(0); 
     }
 
     /**
@@ -52,5 +55,7 @@ contract InfluencerReferenceModule is ModuleBase, IReferenceModule {
         uint256 pubIdPointed
     ) external view override {
         address mirrorCreator = IERC721(HUB).ownerOf(profileId);
+        
+        mirrorCreator.transfer(pubBudgets[pubIdPointed]);
     }
 }
