@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
-pragma solidity 0.8.13;
+pragma solidity 0.8.10;
 
 import {IReferenceModule} from "./lens/IReferenceModule.sol";
 import {ModuleBase} from "./lens/ModuleBase.sol";
@@ -12,11 +12,11 @@ import {InfluencerRankingContract} from "./InfluencerRankingContract.sol";
  *
  * @notice A module that allows paying influencers for distributing a post.
  */
-contract InfluencerReferenceModule is IReferenceModule {
-    RankingContract rankingContract;
+contract InfluencerReferenceModule is ModuleBase, IReferenceModule {
+    InfluencerRankingContract rankingContract;
 
     constructor(address hub, address rankingContractAddr) ModuleBase(hub) {
-        self.rankingContract = RankingContract(rankingContractAddr);
+        rankingContract = InfluencerRankingContract(rankingContractAddr);
     }
 
     /**
