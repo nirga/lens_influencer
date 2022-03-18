@@ -15,5 +15,13 @@
   "bugs": {
     "url": "https://github.com/nirga/lens_influencer/issues"
   },
-  "homepage": "https://github.com/nirga/lens_influencer#readme"
+  "homepage": "https://github.com/nirga/lens_influencer#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "chai": "^4.3.6",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.6.1",
+    "hardhat": "^2.9.1"
+  }
 }
