@@ -16,7 +16,7 @@ contract HuntedAccount is AccessControl {
     mapping(address => uint256) hunters;
     uint256 public totalAmountStaked; 
 
-    //Emitted when amount of tokens had been staked by a hunter
+    // Emitted when amount of tokens had been staked by a hunter
     event Stake(address _hunter, uint256 _hunterAmountStaked, uint256 _hunterTotalAmountStaked, uint256 _hunterTotalAmountStaked);
 
     constructor(
