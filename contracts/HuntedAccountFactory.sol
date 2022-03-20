@@ -13,15 +13,11 @@ contract HuntedAccountFactory {
     }
 
     function newHuntedAccount(
-        address _hunter,
-        string _twitterProfile,
-        string _challenge
+        string memory _twitterProfile
     ) public returns (address) {
         HuntedAccount instance = new HuntedAccount(
             HUB,
-            _owner,
-            _twitterProfile,
-            _challenge
+            _twitterProfile
         );
         return address(instance);
     }
