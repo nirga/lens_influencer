@@ -1,13 +1,34 @@
-require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ethers");
+const dotenv = require("dotenv");
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners();
+dotenv.config({ path: ".env" });
 
-  for (const account of accounts) {
-    console.log(account.address);
-  }
+task("deploy").setAction(async ({}, hre) => {
+  const lensHub = process.env.LENS_HUB;
+
+  console.log("Lens Hub:", lensHub);
+
+  await hre.run("compile");
+
+  // Hardhat always runs the compile task when running scripts with its command
+  // line interface.
+  //
+  // If this script is run directly using `node` you may want to call compile
+  // manually to make sure everything is compiled
+  // await hre.run('compile');
+
+  // We get the contract to deploy
+  const HuntedAccountFactory = await hre.ethers.getContractFactory(
+    "HuntedAccountFactory"
+  );
+  const huntedAccountFactory = await HuntedAccountFactory.deploy(lensHub);
+
+  await huntedAccountFactory.deployed();
+
+  console.log(
+    "HuntedAccountFactory deployed to:",
+    huntedAccountFactory.address
+  );
 });
 
 // You need to export an object to set up your config

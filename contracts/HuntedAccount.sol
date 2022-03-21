@@ -14,15 +14,17 @@ contract HuntedAccount is AccessControl {
     string public twitterProfile;
 
     mapping(address => uint256) hunters;
-    uint256 public totalAmountStaked; 
+    uint256 public totalAmountStaked;
 
     // Emitted when amount of tokens had been staked by a hunter
-    event Stake(address _hunter, uint256 _hunterAmountStaked, uint256 _hunterTotalAmountStaked, uint256 _totalAmountStaked);
+    event Stake(
+        address _hunter,
+        uint256 _hunterAmountStaked,
+        uint256 _hunterTotalAmountStaked,
+        uint256 _totalAmountStaked
+    );
 
-    constructor(
-        address hub,
-        string memory _twitterProfile
-    ) {
+    constructor(address hub, string memory _twitterProfile) {
         HUB = hub;
         totalAmountStaked = 0;
         twitterProfile = _twitterProfile;
@@ -34,7 +36,12 @@ contract HuntedAccount is AccessControl {
         hunters[msg.sender] += msg.value;
         totalAmountStaked += msg.value;
 
-        emit Stake(msg.sender, msg.value, hunters[msg.sender], totalAmountStaked);
+        emit Stake(
+            msg.sender,
+            msg.value,
+            hunters[msg.sender],
+            totalAmountStaked
+        );
     }
 
     function claim(string memory tweetUrl) external {}
