@@ -5,24 +5,21 @@ function Overview() {
     <div className="flex h-screen">
       <div className="m-auto">
         <div className="flex flex-col">
-          <p className="text-3xl font-bold">
-            This is a basic overview to get you started.
+          <p className="text-3xl font-bold mb-4">
+            Get Started
           </p>
-          <p className="text-3xl font-bold mb-8">
-            Is includes two example.
-          </p>
-          <Link to="/" className="text-lg">
-            <p className="text-3xl font-bold text-blue-600 mb-4">
-              Home
+          <Link to="/create-profile" className="text-lg">
+            <p className="text-3xl text-blue-600 mb-4">
+              Create Profile
             </p> 
           </Link>
           <Link to="/api-example" className="text-lg">
-            <p className="text-3xl font-bold text-blue-600 mb-4">
+            <p className="text-3xl text-blue-600 mb-4">
               Lens API Example
             </p> 
           </Link>
           <Link to="/contract-example" className="text-lg">
-            <p className="text-3xl font-bold text-blue-600 mb-4">
+            <p className="text-3xl text-blue-600 mb-4">
               Smart Contract Example
             </p> 
           </Link>
