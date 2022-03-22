@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { login } from '../components/login-user';
 
 const LoginUser = () => {
   /*
@@ -54,14 +54,13 @@ const LoginUser = () => {
     }
   }
 
-  const login = async () => {
+  const userLogin = async () => {
     try {
       const { ethereum } = window;
 
       if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-
+        const loginResponse = await login()
+        console.log(loginResponse)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -80,7 +79,7 @@ const LoginUser = () => {
         <h2 className="text-3xl font-bold mb-6">
           Example User login 🚀
         </h2>
-        <button className="text-3xl font-bold mb-6" onClick={login}>
+        <button className="text-3xl font-bold mb-6 text-blue-600" onClick={userLogin}>
           LOGIN
         </button>
 
