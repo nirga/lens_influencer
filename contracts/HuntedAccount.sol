@@ -104,7 +104,7 @@ contract HuntedAccount is AccessControl {
     }
 
     function withdrawHunterRewards() external {
-        require(hasRole(OWNER_ROLE, msg.sender), "Caller is not a hunter");
+        require(hasRole(HUNTER_ROLE, msg.sender), "Caller is not a hunter");
 
         uint256 allTimeRoyalties = _allTimesRoyaltiesShare().hunters;
 
