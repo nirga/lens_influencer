@@ -26,7 +26,7 @@ contract HuntedAccount is AccessControl {
         address owner;
     }
 
-    bytes32 public constant INITIATOR_ROLE = keccak256("HUNTER_ROLE");
+    bytes32 public constant INITIATOR_ROLE = keccak256("INITIATOR_ROLE");
     bytes32 public constant HUNTER_ROLE = keccak256("HUNTER_ROLE");
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
 
