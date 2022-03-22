@@ -54,18 +54,19 @@ contract HuntedAccount is AccessControl {
 
         // TODO: Create the profile with FeeFollowModule with this contract address as recipient and feesCurrency as currency
         uint256 profileId = 0;
+        // TODO: Transfer the profile NFT to the profile owner
 
         // Transfer the staked assets (in MATIC) to the profile owner
-        payable(profileOwner).transfer(totalAmountStaked);
+        payable(_profileOwner).transfer(totalAmountStaked);
     }
 
     function claimRewards() external {
-        uint256 currentRoyaltiesBalance = IERC20(feesCurrency).balanceOf(address(this));
-        uint256 allTimeRoyaltiesBalance = currentBalance + totalRoyaltiesWithdrawn;
+        uint256 currentRoyaltiesBalance = IERC20(_feesCurrency).balanceOf(address(this));
+        uint256 allTimeRoyaltiesBalance = currentRoyaltiesBalance + totalRoyaltiesWithdrawn;
         uint256 ownerRoyaltiesShare = (allTimeRoyaltiesBalance * (100 - royaltyFee)) / 100;
         uint256 huntersRoyaltiesShare = allTimeRoyaltiesBalance - ownerRoyaltiesShare;
 
-        if (msg.sender == profileOwner) {
+        if (msg.sender == _profileOwner) {
             
         } else {
 
@@ -74,7 +75,7 @@ contract HuntedAccount is AccessControl {
         // IERC20(feesCurrency).safeTransferFrom(address(this), msg.sender, currentBalance);
     }
 
-    function _verifyProfileOwner() internal { 
+    function _verifyProfileOwner() internal returns(bool) { 
         // TODO: Implement
         return true; 
     }
