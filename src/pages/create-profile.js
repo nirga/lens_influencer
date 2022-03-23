@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import Navigation from "../components/navigation";
+import TopHunts from "../components/topHunts";
 
 function CreateProfile() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -7,14 +8,7 @@ function CreateProfile() {
   
   return (
     <div className="grid grid-cols-6 gap-4 mx-4 bg-slate-50">
-        <div className="bg-white h-screen">
-            <div className="flex flex-col pt-8">
-                <Link to="/" className="text-lg mr-4 text-blue-600">Dashboard</Link>
-                <Link to="/create-profile" className="text-lg mr-4 text-blue-600">Create Profile</Link>
-                <Link to="/api-example" className="text-lg mr-4 text-blue-600 mt-10">API Example</Link>
-                <Link to="/contract-example" className="text-lg mr-4 text-blue-600">Contract Example</Link>
-            </div>
-        </div>
+        <Navigation/>
         <div className="col-span-3 bg-slate-50">
             <div className="pt-4">
                 <div className="bg-white w-full rounded-lg">
@@ -45,16 +39,7 @@ function CreateProfile() {
                 </div>
             </div>
         </div>
-        <div className="col-span-2">
-            <div className="pt-4">
-                <div className="bg-white w-full rounded-lg">
-                    <div id="hunts" className="py-4 px-4">
-                        <p className="text-md font-bold">Top pending hunts</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <TopHunts/>
     </div>
   );
 }
