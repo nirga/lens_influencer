@@ -71,8 +71,8 @@ const LoginUser = () => {
         const lensHubContract = new ethers.Contract(lensHubContractAddress, LENS_HUB_ABI, signer);
         const HuntedAccountFactoryContract = new ethers.Contract(huntedAccountFactoryAddress, huntedAccountFactoryABI.abi, signer);
 
-        let hunt = await HuntedAccountFactoryContract.hunt();
-        console.log(hunt)
+        let huntedAccount = await HuntedAccountFactoryContract.newHuntedAccount("abc");
+        console.log(huntedAccount)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
