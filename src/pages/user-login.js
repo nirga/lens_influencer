@@ -97,7 +97,7 @@ const LoginUser = () => {
             </button>
         </div>
 
-         {/*
+        {/*
         * If there is no currentAccount render this button
         */}
         {!currentAccount && (
