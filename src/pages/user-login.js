@@ -1,12 +1,17 @@
 
 import React, { useEffect, useState } from "react";
-import { login } from '../components/login-user';
+import { ethers } from "ethers";
+import { LENS_HUB_ABI } from "../utils/LensHubABI";
+import huntedAccountFactoryABI from '../utils/HuntedAccountFactory.json'
+
 
 const LoginUser = () => {
   /*
   * Just a state variable we use to store our user's public wallet.
   */
   const [currentAccount, setCurrentAccount] = useState("");
+  const lensHubContractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8Fs";
+  const huntedAccountFactoryAddress = "0x68B1D87F95878fE05B998F19b66F4baba5De1aed";
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -54,13 +59,20 @@ const LoginUser = () => {
     }
   }
 
-  const userLogin = async () => {
+  const callContractExample = async () => {
     try {
       const { ethereum } = window;
 
       if (ethereum) {
-        const loginResponse = await login()
-        console.log(loginResponse)
+        console.log("Ethereum object exists")
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const lensHubContract = new ethers.Contract(lensHubContractAddress, LENS_HUB_ABI, signer);
+        const HuntedAccountFactoryContract = new ethers.Contract(lensHubContractAddress, huntedAccountFactoryABI.abi, signer);
+
+        let hunt = await HuntedAccountFactoryContract.hunt();
+        console.log(hunt)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -77,17 +89,19 @@ const LoginUser = () => {
     <div className="flex h-screen">
       <div className="m-auto">
         <h2 className="text-3xl font-bold mb-6">
-          Example User login 🚀
+          example profile creation 🚀
         </h2>
-        <button className="text-3xl font-bold mb-6 text-blue-600" onClick={userLogin}>
-          LOGIN
-        </button>
+        <div>
+            <button className="text-3xl font-bold mb-6 text-blue-600" onClick={callContractExample}>
+                Create Profile
+            </button>
+        </div>
 
          {/*
         * If there is no currentAccount render this button
         */}
         {!currentAccount && (
-          <button className="text-3xl font-bold" onClick={connectWallet}>
+          <button className="text-3xl font-bold text-blue-600" onClick={connectWallet}>
             Connect Wallet
           </button>
         )}
