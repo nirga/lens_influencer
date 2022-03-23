@@ -69,7 +69,7 @@ const LoginUser = () => {
         const signer = provider.getSigner();
 
         const lensHubContract = new ethers.Contract(lensHubContractAddress, LENS_HUB_ABI, signer);
-        const HuntedAccountFactoryContract = new ethers.Contract(lensHubContractAddress, huntedAccountFactoryABI.abi, signer);
+        const HuntedAccountFactoryContract = new ethers.Contract(huntedAccountFactoryAddress, huntedAccountFactoryABI.abi, signer);
 
         let hunt = await HuntedAccountFactoryContract.hunt();
         console.log(hunt)
