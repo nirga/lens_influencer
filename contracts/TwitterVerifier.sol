@@ -70,15 +70,7 @@ contract TwitterVerifier is ChainlinkClient {
                 challenge
             )
         );
-        request.add(
-            "get",
-            url
-            //"https://lfgrow-hack-influencer.netlify.app/.netlify/functions/app/?tweet=1505977175488483339&challenge=Berlin"
-        );
-        //string memory queryParams = string(
-        //   abi.encodePacked("ids=", tweetId, "&challenge=", challenge)
-        //);
-        //request.add("queryParams", queryParams);
+        request.add("get", url);
         request.add("path", "data");
         request.addInt("value", 1);
         request.add("operator", "eq");
