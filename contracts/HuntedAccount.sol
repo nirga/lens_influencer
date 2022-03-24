@@ -33,6 +33,7 @@ contract HuntedAccount is AccessControl {
     address immutable HUB;
     HuntedProfile _huntedProfile;
 
+<<<<<<< HEAD
     mapping(address => Hunter) hunters;
     uint8 public royaltyFee;
     uint256 public totalAmountStaked;
@@ -50,6 +51,23 @@ contract HuntedAccount is AccessControl {
         string memory _twitterProfile,
         uint8 _royaltyFee
     ) {
+=======
+    // Used to identify the true owner of the account.
+    string public twitterProfile;
+
+    mapping(address => uint256) hunters;
+    uint256 public totalAmountStaked;
+
+    // Emitted when amount of tokens had been staked by a hunter
+    event Stake(
+        address _hunter,
+        uint256 _hunterAmountStaked,
+        uint256 _hunterTotalAmountStaked,
+        uint256 _totalAmountStaked
+    );
+
+    constructor(address hub, string memory _twitterProfile) {
+>>>>>>> 6996df27e20404fc0bd8d966146a14d5c93f499e
         HUB = hub;
         _huntedProfile = HuntedProfile(_twitterProfile, 0, address(0));
         totalAmountStaked = 0;
@@ -74,6 +92,7 @@ contract HuntedAccount is AccessControl {
     function claimProfile(string memory tweetUrl, address feesCurrency) external {
         require(_verifyProfileOwner());
 
+<<<<<<< HEAD
         // Store the profile owner address
         _huntedProfile.owner = msg.sender;
         _feesCurrency = feesCurrency;
@@ -87,6 +106,14 @@ contract HuntedAccount is AccessControl {
 
         // Mark that the profile was hunted in-order to avoid future staking
         _profileHunted = true;
+=======
+        emit Stake(
+            msg.sender,
+            msg.value,
+            hunters[msg.sender],
+            totalAmountStaked
+        );
+>>>>>>> 6996df27e20404fc0bd8d966146a14d5c93f499e
     }
 
     function withdrawOwnerRewards() external {
