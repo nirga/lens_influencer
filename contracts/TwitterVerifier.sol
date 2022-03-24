@@ -62,14 +62,23 @@ contract TwitterVerifier is ChainlinkClient {
             this.fulfill.selector
         );
 
+        string memory url = string(
+            abi.encodePacked(
+                "https://lfgrow-hack-influencer.netlify.app/.netlify/functions/app/?tweet=",
+                tweetId,
+                "&challenge=",
+                challenge
+            )
+        );
         request.add(
             "get",
-            "https://lfgrow-hack-influencer.netlify.app/.netlify/functions/app"
+            url
+            //"https://lfgrow-hack-influencer.netlify.app/.netlify/functions/app/?tweet=1505977175488483339&challenge=Berlin"
         );
-        string memory queryParams = string(
-            abi.encodePacked("ids=", tweetId, "&challenge=", challenge)
-        );
-        request.add("queryParams", queryParams);
+        //string memory queryParams = string(
+        //   abi.encodePacked("ids=", tweetId, "&challenge=", challenge)
+        //);
+        //request.add("queryParams", queryParams);
         request.add("path", "data");
         request.addInt("value", 1);
         request.add("operator", "eq");
@@ -80,9 +89,9 @@ contract TwitterVerifier is ChainlinkClient {
         verifiedProfiles[reqId].accountContract = address(msg.sender);
         verifiedProfiles[reqId].isVerified = false;
 
-        emit VerificationStarted(requestId);
+        emit VerificationStarted(reqId);
 
-        return requestId;
+        return reqId;
     }
 
     /**
