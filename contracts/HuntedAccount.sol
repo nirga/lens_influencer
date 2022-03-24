@@ -33,7 +33,7 @@ contract HuntedAccount is AccessControl {
     address immutable HUB;
     HuntedProfile _huntedProfile;
 
-    mapping(address => uint256) hunters;
+    mapping(address => Hunter) hunters;
     uint8 public royaltyFee;
     uint256 public totalAmountStaked;
     uint256 public totalRoyaltiesWithdrawn;
@@ -63,10 +63,10 @@ contract HuntedAccount is AccessControl {
         require(!_profileHunted);
         require(msg.value > 0);
 
-        hunters[msg.sender] += msg.value;
+        hunters[msg.sender].amountStaked += msg.value;
         totalAmountStaked += msg.value;
 
-        emit Stake(msg.sender, msg.value, hunters[msg.sender], totalAmountStaked);
+        emit Stake(msg.sender, msg.value, hunters[msg.sender].amountStaked, totalAmountStaked);
 
         _setupRole(HUNTER_ROLE, msg.sender);
     }
@@ -80,7 +80,7 @@ contract HuntedAccount is AccessControl {
 
         // TODO: Create the profile with FeeFollowModule with this contract address as recipient and feesCurrency as currency
         uint256 profileId = 0;
-        // TODO: Transfer the profile NFT to the profile owner
+        // TODO: Transfer the profile NFT to the profile owner?
 
         // Transfer the staked assets (in MATIC) to the profile owner
         payable(_huntedProfile.owner).transfer(totalAmountStaked);
@@ -104,15 +104,23 @@ contract HuntedAccount is AccessControl {
     }
 
     function withdrawHunterRewards() external {
-        require(hasRole(HUNTER_ROLE, msg.sender), "Caller is not a hunter");
+        address payable withdrawer = payable(msg.sender);
+
+        require(hasRole(HUNTER_ROLE, withdrawer), "Caller is not a hunter");
 
         uint256 allTimeRoyalties = _allTimesRoyaltiesShare().hunters;
+        uint256 hunterAllTimeShare = hunters[withdrawer].amountStaked / totalAmountStaked * allTimeRoyalties;
+        uint256 amountToWithdraw = hunterAllTimeShare - hunters[withdrawer].amountWithdrawn;
+        
+        require(amountToWithdraw > 0, "No royalties to withdraw");
 
-        // TODO: Implement
-        // IERC20(feesCurrency).safeTransferFrom(address(this), msg.sender, currentBalance);
+        IERC20(_feesCurrency).safeTransferFrom(address(this), withdrawer, amountToWithdraw);
+        hunters[withdrawer].amountWithdrawn += amountToWithdraw;
+
+        emit RoyaltiesWithdrawn(withdrawer, amountToWithdraw, hunters[withdrawer].amountWithdrawn);
     }
 
-    function _verifyProfileOwner() internal returns(bool) { 
+    function _verifyProfileOwner() internal pure returns(bool) { 
         // TODO: Implement
         return true; 
     }
@@ -128,7 +136,6 @@ contract HuntedAccount is AccessControl {
 
     function _allTimesRoyaltiesShare() internal view returns(RoyaltiesShare memory) {
         RoyaltiesShare memory share;
-        uint256 currentRoyaltiesBalance = _balance();
         uint256 allTimeRoyaltiesEarned = _allTimeBalance();
 
         share.owner = (allTimeRoyaltiesEarned * (100 - royaltyFee)) / 100;
