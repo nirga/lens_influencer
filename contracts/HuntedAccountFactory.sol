@@ -11,7 +11,9 @@ contract HuntedAccountFactory {
 
     event HuntedAccountCreated(address huntedAccount);
 
-    constructor(address hub, address twitterVerifier) {
+    address[] public huntedAccounts;
+
+    constructor(address hub), address twitterVerifier {
         HUB = hub;
         TWITTER_VERIFIER = twitterVerifier;
     }
@@ -29,8 +31,10 @@ contract HuntedAccountFactory {
             _royaltyFee
         );
 
+        address addr = address(instance);
+        huntedAccounts.push(addr);
         emit HuntedAccountCreated(address(instance));
-
-        return address(instance);
+        
+        return addr;
     }
 }

@@ -75,7 +75,8 @@ function CreateProfile() {
         const HuntedAccountFactoryContract = new ethers.Contract(huntedAccountFactoryAddress, huntedAccountFactoryABI.abi, signer);
 
         let huntedAccount = await HuntedAccountFactoryContract.newHuntedAccount(twitterHandleClean, 2);
-        console.log(huntedAccount)
+        let awaitedHuntedAccount = await huntedAccount.wait()
+        console.log(awaitedHuntedAccount)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
