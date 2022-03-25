@@ -6,8 +6,8 @@ import TopHunts from "../components/topHunts";
 import huntedAccountFactoryABI from '../utils/HuntedAccountFactory.json'
 
 function CreateProfile() {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
-  const onSubmit = data => callContractExample(data);
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const onSubmit = data => createHuntedAccount(data);
 
   const [currentAccount, setCurrentAccount] = useState("");
   const huntedAccountFactoryAddress = "0xfF3fB3eefdF9e74Ef897Ae45682802278eB7699a";
@@ -58,8 +58,11 @@ function CreateProfile() {
     }
   }
 
-  const callContractExample = async (data) => {
-    console.log(data)
+  const createHuntedAccount = async (data) => {
+    let twitterHandleClean = data.twitterHandle
+    if(data.twitterHandle.startsWith("@")) {
+      twitterHandleClean = data.twitterHandle.substring(1)
+    }
 
     try {
       const { ethereum } = window;
@@ -71,7 +74,7 @@ function CreateProfile() {
 
         const HuntedAccountFactoryContract = new ethers.Contract(huntedAccountFactoryAddress, huntedAccountFactoryABI.abi, signer);
 
-        let huntedAccount = await HuntedAccountFactoryContract.newHuntedAccount(data.twitterHandle);
+        let huntedAccount = await HuntedAccountFactoryContract.newHuntedAccount(twitterHandleClean, 2);
         console.log(huntedAccount)
       } else {
         console.log("Ethereum object doesn't exist!");
