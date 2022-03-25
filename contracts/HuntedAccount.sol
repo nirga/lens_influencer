@@ -3,15 +3,16 @@
 pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "./TwitterVerifier.sol";
 
 contract HuntedAccount is AccessControl {
     using SafeERC20 for IERC20;
 
-    struct RoyaltiesShare { 
-      uint256 owner;
-      uint256 hunters;
+    struct RoyaltiesShare {
+        uint256 owner;
+        uint256 hunters;
     }
 
     struct Hunter {
@@ -31,7 +32,11 @@ contract HuntedAccount is AccessControl {
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
 
     address immutable HUB;
+    address immutable TWITTER_VERIFIER;
     HuntedProfile _huntedProfile;
+
+    string challenge;
+    bytes32 verificationRequest;
 
     mapping(address => Hunter) hunters;
     uint8 public royaltyFee;
@@ -41,17 +46,30 @@ contract HuntedAccount is AccessControl {
     bool _profileHunted;
 
     // Emitted when amount of tokens had been staked by a hunter
-    event Stake(address _hunter, uint256 _hunterAmountStaked, uint256 _hunterTotalAmountStaked, uint256 _totalAmountStaked);
+    event Stake(
+        address _hunter,
+        uint256 _hunterAmountStaked,
+        uint256 _hunterTotalAmountStaked,
+        uint256 _totalAmountStaked
+    );
     // Emitted when amount of royalties had been withdrawn
-    event RoyaltiesWithdrawn(address _withdrawer, uint256 _withdrawnAmount, uint256 _allTimeWithdrawnAmount);
+    event RoyaltiesWithdrawn(
+        address _withdrawer,
+        uint256 _withdrawnAmount,
+        uint256 _allTimeWithdrawnAmount
+    );
 
     constructor(
         address hub,
+        address twitterVerifier,
         string memory _twitterProfile,
+        string memory _challenge,
         uint8 _royaltyFee
     ) {
         HUB = hub;
+        TWITTER_VERIFIER = twitterVerifier;
         _huntedProfile = HuntedProfile(_twitterProfile, 0, address(0));
+        challenge = _challenge;
         totalAmountStaked = 0;
         royaltyFee = _royaltyFee;
         _profileHunted = false;
@@ -66,12 +84,25 @@ contract HuntedAccount is AccessControl {
         hunters[msg.sender].amountStaked += msg.value;
         totalAmountStaked += msg.value;
 
-        emit Stake(msg.sender, msg.value, hunters[msg.sender].amountStaked, totalAmountStaked);
+        emit Stake(
+            msg.sender,
+            msg.value,
+            hunters[msg.sender].amountStaked,
+            totalAmountStaked
+        );
 
         _setupRole(HUNTER_ROLE, msg.sender);
     }
 
-    function claimProfile(string memory tweetUrl, address feesCurrency) external {
+    function verifyProfileOwner(string memory tweetId) external {
+        verificationRequest = TwitterVerifier(TWITTER_VERIFIER).verifyTweet(
+            _huntedProfile.twitterProfile,
+            tweetId,
+            challenge
+        );
+    }
+
+    function claimProfile(address feesCurrency) external {
         require(_verifyProfileOwner());
 
         // Store the profile owner address
@@ -90,17 +121,29 @@ contract HuntedAccount is AccessControl {
     }
 
     function withdrawOwnerRewards() external {
-        require(hasRole(OWNER_ROLE, msg.sender), "Caller is not an owner"); 
+        require(hasRole(OWNER_ROLE, msg.sender), "Caller is not an owner");
 
         uint256 ownerAllTimeRoyalties = _allTimesRoyaltiesShare().owner;
-        require(ownerAllTimeRoyalties > _huntedProfile.amountWithdrawn, "No royalties to withdraw");  
+        require(
+            ownerAllTimeRoyalties > _huntedProfile.amountWithdrawn,
+            "No royalties to withdraw"
+        );
 
-        uint256 amountToWithdraw = ownerAllTimeRoyalties - _huntedProfile.amountWithdrawn; 
+        uint256 amountToWithdraw = ownerAllTimeRoyalties -
+            _huntedProfile.amountWithdrawn;
 
-        IERC20(_feesCurrency).safeTransferFrom(address(this), payable(_huntedProfile.owner), amountToWithdraw);
+        IERC20(_feesCurrency).safeTransferFrom(
+            address(this),
+            payable(_huntedProfile.owner),
+            amountToWithdraw
+        );
         _huntedProfile.amountWithdrawn += amountToWithdraw;
 
-        emit RoyaltiesWithdrawn(_huntedProfile.owner, amountToWithdraw, _huntedProfile.amountWithdrawn);
+        emit RoyaltiesWithdrawn(
+            _huntedProfile.owner,
+            amountToWithdraw,
+            _huntedProfile.amountWithdrawn
+        );
     }
 
     function withdrawHunterRewards() external {
@@ -109,32 +152,45 @@ contract HuntedAccount is AccessControl {
         require(hasRole(HUNTER_ROLE, withdrawer), "Caller is not a hunter");
 
         uint256 allTimeRoyalties = _allTimesRoyaltiesShare().hunters;
-        uint256 hunterAllTimeShare = hunters[withdrawer].amountStaked / totalAmountStaked * allTimeRoyalties;
-        uint256 amountToWithdraw = hunterAllTimeShare - hunters[withdrawer].amountWithdrawn;
-        
+        uint256 hunterAllTimeShare = (hunters[withdrawer].amountStaked /
+            totalAmountStaked) * allTimeRoyalties;
+        uint256 amountToWithdraw = hunterAllTimeShare -
+            hunters[withdrawer].amountWithdrawn;
+
         require(amountToWithdraw > 0, "No royalties to withdraw");
 
-        IERC20(_feesCurrency).safeTransferFrom(address(this), withdrawer, amountToWithdraw);
+        IERC20(_feesCurrency).safeTransferFrom(
+            address(this),
+            withdrawer,
+            amountToWithdraw
+        );
         hunters[withdrawer].amountWithdrawn += amountToWithdraw;
 
-        emit RoyaltiesWithdrawn(withdrawer, amountToWithdraw, hunters[withdrawer].amountWithdrawn);
+        emit RoyaltiesWithdrawn(
+            withdrawer,
+            amountToWithdraw,
+            hunters[withdrawer].amountWithdrawn
+        );
     }
 
-    function _verifyProfileOwner() internal pure returns(bool) { 
-        // TODO: Implement
-        return true; 
+    function _verifyProfileOwner() internal view returns (bool) {
+        return TwitterVerifier(TWITTER_VERIFIER).getResult(verificationRequest);
     }
 
-    function _balance() internal view returns(uint256) {
+    function _balance() internal view returns (uint256) {
         return IERC20(_feesCurrency).balanceOf(address(this));
     }
 
-    function _allTimeBalance() internal view returns(uint256) {
+    function _allTimeBalance() internal view returns (uint256) {
         // Calculate the amount of total royalties earned by the hunted profile along time by adding those which were already withdrawn to the existing balance
         return _balance() + totalRoyaltiesWithdrawn;
     }
 
-    function _allTimesRoyaltiesShare() internal view returns(RoyaltiesShare memory) {
+    function _allTimesRoyaltiesShare()
+        internal
+        view
+        returns (RoyaltiesShare memory)
+    {
         RoyaltiesShare memory share;
         uint256 allTimeRoyaltiesEarned = _allTimeBalance();
 

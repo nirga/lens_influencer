@@ -7,20 +7,30 @@ import "./HuntedAccount.sol";
 /// @title The HuntedAccountFactory allows users to create HuntedAccount
 contract HuntedAccountFactory {
     address immutable HUB;
+    address immutable TWITTER_VERIFIER;
 
-    constructor(address hub) {
+    event HuntedAccountCreated(address huntedAccount);
+
+    constructor(address hub, address twitterVerifier) {
         HUB = hub;
+        TWITTER_VERIFIER = twitterVerifier;
     }
 
     function newHuntedAccount(
         string memory _twitterProfile,
+        string memory _challenge,
         uint8 _royaltyFee
     ) public returns (address) {
         HuntedAccount instance = new HuntedAccount(
             HUB,
+            TWITTER_VERIFIER,
             _twitterProfile,
+            _challenge,
             _royaltyFee
         );
+
+        emit HuntedAccountCreated(address(instance));
+
         return address(instance);
     }
 }
