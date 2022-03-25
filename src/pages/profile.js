@@ -13,7 +13,7 @@ function Profile() {
 
   const [currentAccount, setCurrentAccount] = useState("");
   // TODO: make dynamic!! Q: how -> get contract via twitterHandle possible?
-  const huntedAccountAddress = "0x67aec28a136ae83396e4d85fbc12f8590a0959db695d64083cf4c32f062f31ab";
+  const huntedAccountAddress = "0x470C409e47beea3b734a1fF5Bb21F794cC59753B";
 
   function useQuery() {
     const { search } = useLocation();
