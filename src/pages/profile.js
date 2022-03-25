@@ -128,7 +128,7 @@ function Profile() {
                     <p className="text-md font-bold mb-4">This profile has not been claimed yet</p>
                     <p className="text-md">You can stake to share in this influencer's future earnings below ...</p>
                     <p className="text-md mb-4">... or claim this profile if it should be yours.</p>
-                    <p className="text-md font-bold mt-8 mb-2">Stake in this profile</p>
+                    <p className="text-md font-bold mt-8 mb-2">Stake MATIC in this profile</p>
                     <form 
                       className="flex w-full justify-between"
                       onSubmit={handleSubmit(onSubmit)}
