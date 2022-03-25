@@ -9,8 +9,7 @@ import {
 import Dashboard from "./pages/dashboard";
 import Profile from "./pages/profile";
 import CreateProfile from "./pages/create-profile";
-import StakeProfile from "./pages/stake-profile";
-import ClaimProfile from "./pages/claim-profile";
+import Stakes from "./pages/stakes";
 import Docs from "./pages/docs";
 import Help from "./pages/help";
 
@@ -43,8 +42,7 @@ export default function App() {
           <Route exact path="/" element={<Dashboard/>}/>
           <Route exact path="/profile" element={<Profile/>}/>
           <Route exact path="/create-profile" element={<CreateProfile/>}/>
-          <Route exact path="/stake-profile" element={<StakeProfile/>}/>
-          <Route exact path="/claim-profile" element={<ClaimProfile/>}/>
+          <Route exact path="/stakes" element={<Stakes/>}/>
           <Route exact path="/help" element={<Help/>}/>
           <Route exact path="/docs" element={<Docs/>}/>
           <Route path="*" element={<Dashboard/>}/>

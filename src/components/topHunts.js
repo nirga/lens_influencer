@@ -1,24 +1,29 @@
 import { Link } from "react-router-dom";
 
 const staticProfiles = [{
-    name: 'StaticProfile1',
-    twitterHandle: 'TwitterStaticProfile1'
+    name: 'Rock',
+    twitterHandle: 'the_rock',
+    reward: 549
   },
   {
-    name: 'StaticProfile2',
-    twitterHandle: 'TwitterStaticProfile2'
+    name: 'Bennie',
+    twitterHandle: 'bennie_houston',
+    reward: 387
   },
   {
-    name: 'StaticProfil3',
-    twitterHandle: 'TwitterStaticProfile3'
+    name: 'Tommy',
+    twitterHandle: 'tommy_lee',
+    reward: 376
   },
   {
-    name: 'StaticProfile4',
-    twitterHandle: 'TwitterStaticProfile4'
+    name: 'Ariana',
+    twitterHandle: 'ariana_grande',
+    reward: 280
   },
   {
-    name: 'StaticProfile5',
-    twitterHandle: 'TwitterStaticProfile5'
+    name: 'Christiano',
+    twitterHandle: 'cr7',
+    reward: 227
   },
 ]
 
@@ -36,10 +41,25 @@ function TopHunts() {
                                 pathname: "/profile",
                                 search: `?twitterHandle=${profile.twitterHandle}`,
                             }}
-                            className="mb-4"
                         >
-                            <div >
-                                {profile.name}
+                            <div className="flex justify-between w-full py-2">
+                                <div className="flex">
+                                    <div className="m-auto">
+                                        <div className="h-10 w-10 bg-blue-300 rounded-full">
+                                            <div className="flex h-full">
+                                                <div className="m-auto uppercase">
+                                                    {profile.twitterHandle.charAt(0)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="m-auto ml-4">
+                                        <p>@{profile.twitterHandle}</p>
+                                    </div>
+                                </div>
+                                <div className="my-auto font-semibold">
+                                    <div>$ {profile.reward}</div>
+                                </div>
                             </div>
                         </Link>
                     ))}

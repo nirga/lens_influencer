@@ -86,7 +86,7 @@ function CreateProfile() {
   }, [])
   
   return (
-    <div className="grid grid-cols-6 gap-4 mx-4 bg-slate-50">
+    <div className="grid grid-cols-6 gap-4 px-4 bg-slate-50">
         <Navigation/>
         <div className="col-span-3 bg-slate-50">
             <div className="pt-4">

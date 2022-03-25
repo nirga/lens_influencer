@@ -14,8 +14,6 @@ function Profile() {
 
   function useQuery() {
     const { search } = useLocation();
-    console.log(search)
-  
     return React.useMemo(() => new URLSearchParams(search), [search]);
   }
 
@@ -93,13 +91,48 @@ function Profile() {
   }, [])
   
   return (
-    <div className="grid grid-cols-6 gap-4 mx-4 bg-slate-50">
+    <div className="grid grid-cols-6 gap-4 px-4 bg-slate-50">
         <Navigation/>
         <div className="col-span-3 bg-slate-50">
             <div className="pt-4">
-                <div className="bg-white w-full rounded-lg">
-                    <p className="text-md font-bold mb-4">Hunting Profile</p>
-                    <p className="text-md">Twitter Handle - {query.get("twitterHandle")}</p>
+                <div className="bg-white w-full rounded-lg py-4 px-4">
+                  <div className="flex justify-between">
+                    <p className="text-md mb-4">Hunting Profile</p>
+                    <div className="flex">
+                      <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                          Claim
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <div className="my-auto">
+                        <div className="h-16 w-16 bg-blue-300 rounded-full">
+                            <div className="flex h-full">
+                                <div className="m-auto text-2xl uppercase">
+                                  {query.get("twitterHandle").charAt(0)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="my-auto ml-4">
+                      <p className="text-lg font-bold">@{query.get("twitterHandle")}</p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div className="pt-4">
+                <div className="bg-slate-200 w-full rounded-lg py-4 px-4">
+                    <p className="text-md font-bold mb-4">This profile has not been claimed yet</p>
+                    <p className="text-md mb-4">You can stake to share in this influencer's future earnings, or claim this profile if it should be yours.</p>
+                    <p className="text-md font-bold mb-4">Current Stake: todo</p>
+                    <div className="flex justify-between">
+                      <p>Input Form</p>
+                      <div className="flex">
+                        <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                            Stake
+                        </p>
+                      </div>
+                    </div>
                 </div>
             </div>
         </div>
