@@ -21,8 +21,8 @@ function Dashboard() {
                     <div className="text-md font-bold mb-4">GET STARTED ...</div>
                     <div className="flex flex-col">
                         <Link to="/create-profile" className="text-lg mr-4 text-blue-600">Create a Profile</Link>
-                        <Link to="/profile?twitterHandle=TwitterStaticProfile1" className="text-lg mr-4 text-blue-600">Stake in a Profile</Link>
-                        <Link to="/profile?twitterHandle=TwitterStaticProfile1" className="text-lg mr-4 text-blue-600">Claim a Profile</Link>
+                        <Link to="/profile?twitterHandle=cr7" className="text-lg mr-4 text-blue-600">Stake in a Profile</Link>
+                        <Link to="/profile?twitterHandle=cr7" className="text-lg mr-4 text-blue-600">Claim a Profile</Link>
                     </div>
                 </div>
             </div>

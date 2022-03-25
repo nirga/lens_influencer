@@ -101,9 +101,11 @@ function Profile() {
                   <div className="flex justify-between">
                     <p className="text-md mb-4">Hunting Profile</p>
                     <div className="flex">
-                      <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                      <button 
+                        className="bg-blue-600 text-white px-8 py-2 rounded-lg"
+                      >
                           Claim
-                      </p>
+                      </button>
                     </div>
                   </div>
                   <div className="flex mt-4">
