@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
 import huntedAccountFactoryABI from '../utils/HuntedAccountFactory.json'
 
 function Profile() {
-  const onSubmit = data => callContractExample(data);
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const onSubmit = data => console.log(data);
   let query = useQuery();
 
   const [currentAccount, setCurrentAccount] = useState("");
@@ -104,7 +106,7 @@ function Profile() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex">
+                  <div className="flex mt-4">
                     <div className="my-auto">
                         <div className="h-16 w-16 bg-blue-300 rounded-full">
                             <div className="flex h-full">
@@ -114,8 +116,9 @@ function Profile() {
                             </div>
                         </div>
                     </div>
-                    <div className="my-auto ml-4">
-                      <p className="text-lg font-bold">@{query.get("twitterHandle")}</p>
+                    <div className="flex w-full justify-between my-auto ml-4 pt-2">
+                      <p className="text-lg font-bold ">@{query.get("twitterHandle")}</p>
+                      <p className="text-md font-bold mb-4">Stake: $ XX</p>
                     </div>
                   </div>
                 </div>
@@ -123,16 +126,30 @@ function Profile() {
             <div className="pt-4">
                 <div className="bg-slate-200 w-full rounded-lg py-4 px-4">
                     <p className="text-md font-bold mb-4">This profile has not been claimed yet</p>
-                    <p className="text-md mb-4">You can stake to share in this influencer's future earnings, or claim this profile if it should be yours.</p>
-                    <p className="text-md font-bold mb-4">Current Stake: todo</p>
-                    <div className="flex justify-between">
-                      <p>Input Form</p>
-                      <div className="flex">
-                        <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
-                            Stake
-                        </p>
+                    <p className="text-md">You can stake to share in this influencer's future earnings below ...</p>
+                    <p className="text-md mb-4">... or claim this profile if it should be yours.</p>
+                    <p className="text-md font-bold mt-8 mb-2">Stake in this profile</p>
+                    <form 
+                      className="flex w-full justify-between"
+                      onSubmit={handleSubmit(onSubmit)}
+                    >
+                      {/* register your input into the hook by invoking the "register" function */}
+                      <div className="flex flex-col">
+                        <input 
+                          placeholder="amount" 
+                          {...register("stakeValue", { required: true })} 
+                          className="border-2 border-slate-200 rounded-md px-2 py-2 text-center"
+                        />
+                        {errors.stakeValue && <span className="text-red-500">stake value is required</span>}
                       </div>
-                    </div>
+                      <button type="submit">
+                        <div className="flex">
+                          <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                              Stake
+                          </p>
+                        </div>
+                      </button>
+                    </form>
                 </div>
             </div>
         </div>

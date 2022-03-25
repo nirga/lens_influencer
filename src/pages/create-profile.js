@@ -93,15 +93,17 @@ function CreateProfile() {
                 <div className="bg-white w-full rounded-lg">
                     <form onSubmit={handleSubmit(onSubmit)} className="py-4 px-4">
                         <p className="text-md font-bold mb-4">Create a new hunting Profile</p>
-                        <p className="text-md">Name</p>
+                        <p className="text-md">Full Name</p>
                         <input
-                            className="border-2 border-slate-200 w-full rounded-md px-2"
-                            {...register("name")}
+                          placeholder="Satoshi Nakamoto" 
+                          className="border-2 border-slate-200 w-full rounded-md px-2 py-2"
+                          {...register("name")}
                         />
-                        <p className="text-md mt-2">Twitter Username</p>
+                        <p className="text-md mt-2">Twitter Handle</p>
                         <input
-                            className="border-2 border-slate-200 w-full rounded-md px-2"
-                            {...register("twitterHandle", { required: true })}
+                          placeholder="@username" 
+                          className="border-2 border-slate-200 w-full rounded-md px-2 py-2"
+                          {...register("twitterHandle", { required: true })}
                         />
                         {errors.twitterRequired && <span className="text-red-500">Twitter handle is required</span>}
 
@@ -122,13 +124,24 @@ function CreateProfile() {
                             )}
                             {currentAccount && (
                                 <input 
-                                type="submit"
-                                value="Create Profile"
-                                className="bg-blue-600 py-2 px-4 text-white rounded-md"
+                                  type="submit"
+                                  value="Create Profile"
+                                  className="bg-blue-600 py-2 px-4 text-white rounded-md"
                                 />
                             )}
                         </div>
                     </form>
+                </div>
+            </div>
+            <div className="pt-4">
+                <div className="bg-white w-full rounded-lg p-4">
+                    <div className="text-md font-bold mb-2">Creating your own hunting profile?</div>
+                    <div className="">
+                        After you created the profile ...
+                    </div>
+                    <div className="">
+                        ... navigate to /profile?twitterHandle=YOUR_TWITTER_HANDLE and claim it!
+                    </div>
                 </div>
             </div>
         </div>
