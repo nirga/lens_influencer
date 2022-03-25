@@ -4,15 +4,16 @@ import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
-import huntedAccountFactoryABI from '../utils/HuntedAccountFactory.json'
+import HuntedAccountABI from '../utils/HuntedAccount.json'
 
 function Profile() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
-  const onSubmit = data => console.log(data);
+  const onSubmit = data => stakeProfile(data);
   let query = useQuery();
 
   const [currentAccount, setCurrentAccount] = useState("");
-  const huntedAccountFactoryAddress = "0xfF3fB3eefdF9e74Ef897Ae45682802278eB7699a";
+  // TODO: make dynamic!! Q: how -> get contract via twitterHandle possible?
+  const huntedAccountAddress = "0x67aec28a136ae83396e4d85fbc12f8590a0959db695d64083cf4c32f062f31ab";
 
   function useQuery() {
     const { search } = useLocation();
@@ -65,9 +66,7 @@ function Profile() {
     }
   }
 
-  const callContractExample = async (data) => {
-    console.log(data)
-
+  const stakeProfile = async (data) => {
     try {
       const { ethereum } = window;
 
@@ -76,10 +75,10 @@ function Profile() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        const HuntedAccountFactoryContract = new ethers.Contract(huntedAccountFactoryAddress, huntedAccountFactoryABI.abi, signer);
+        const HuntedAccountContract = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
 
-        let huntedAccount = await HuntedAccountFactoryContract.newHuntedAccount(data.twitterHandle);
-        console.log(huntedAccount)
+        let stakedHuntAccount = await HuntedAccountContract.stake();
+        console.log(stakedHuntAccount)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
