@@ -80,7 +80,8 @@ function Profile() {
         // data.stakeValue as value laater
         const options = {value: ethers.utils.parseEther("0.1")}
         let stakedHuntAccount = await HuntedAccountContract.stake(options);
-        console.log(stakedHuntAccount)
+        let awaitedStake = await stakedHuntAccount.wait()
+        console.log(awaitedStake)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
