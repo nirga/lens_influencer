@@ -5,6 +5,9 @@ pragma solidity 0.8.10;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ILensHub} from "./lens/ILensHub.sol";
+import {MockProfileCreationProxy} from "./lens/MockProfileCreationProxy.sol";
+import {DataTypes} from "./lens/DataTypes.sol";
 import "./TwitterVerifier.sol";
 
 contract HuntedAccount is AccessControl {
@@ -21,6 +24,7 @@ contract HuntedAccount is AccessControl {
     }
 
     struct HuntedProfile {
+        uint256 profileId;
         // Used to identify the true owner of the account.
         string twitterProfile;
         uint256 amountWithdrawn;
@@ -31,8 +35,11 @@ contract HuntedAccount is AccessControl {
     bytes32 public constant HUNTER_ROLE = keccak256("HUNTER_ROLE");
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
 
-    address immutable HUB;
+    address immutable LENS_HUB;
+    address immutable MOCK_PROFILE_CREATION_PROXY;
+    address immutable FEE_FOLLOW_MODULE;
     address immutable TWITTER_VERIFIER;
+
     HuntedProfile _huntedProfile;
 
     string challenge;
@@ -60,20 +67,39 @@ contract HuntedAccount is AccessControl {
     );
 
     constructor(
-        address hub,
+        address lensHub,
+        address mockProfileCreationProxy,
+        address feeFollowModule,
         address twitterVerifier,
         string memory _twitterProfile,
         string memory _challenge,
         uint8 _royaltyFee
     ) {
-        HUB = hub;
+        LENS_HUB = lensHub;
+        MOCK_PROFILE_CREATION_PROXY = mockProfileCreationProxy;
+        FEE_FOLLOW_MODULE = feeFollowModule;
         TWITTER_VERIFIER = twitterVerifier;
-        _huntedProfile = HuntedProfile(_twitterProfile, 0, address(0));
         challenge = _challenge;
         totalAmountStaked = 0;
         royaltyFee = _royaltyFee;
         _profileHunted = false;
 
+        DataTypes.CreateProfileData memory profile;
+        profile.to = address(this);
+        profile.handle = _twitterProfile;
+        profile.followModule = address(0);
+        MockProfileCreationProxy(MOCK_PROFILE_CREATION_PROXY)
+            .proxyCreateProfile(profile);
+        uint256 profileId = ILensHub(LENS_HUB).getProfileIdByHandle(
+            _huntedProfile.twitterProfile
+        );
+
+        _huntedProfile = HuntedProfile(
+            profileId,
+            _twitterProfile,
+            0,
+            address(0)
+        );
         _setupRole(INITIATOR_ROLE, msg.sender);
     }
 
@@ -102,15 +128,25 @@ contract HuntedAccount is AccessControl {
         );
     }
 
-    function claimProfile(address feesCurrency) external {
+    function claimProfile(uint256 followFee, address feesCurrency) external {
         require(_verifyProfileOwner());
 
         // Store the profile owner address
         _huntedProfile.owner = msg.sender;
         _feesCurrency = feesCurrency;
 
-        // TODO: Create the profile with FeeFollowModule with this contract address as recipient and feesCurrency as currency
-        uint256 profileId = 0;
+        // Create the profile with FeeFollowModule with this contract address as recipient and feesCurrency as currency
+        bytes memory followModuleData = abi.encode(
+            followFee,
+            feesCurrency,
+            address(this)
+        );
+        ILensHub(LENS_HUB).setFollowModule(
+            _huntedProfile.profileId,
+            FEE_FOLLOW_MODULE,
+            followModuleData
+        );
+
         // TODO: Transfer the profile NFT to the profile owner?
 
         // Transfer the staked assets (in MATIC) to the profile owner

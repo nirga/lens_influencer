@@ -7,6 +7,9 @@ const networkConfig = {
     jobId: "29fa9aa13bf1468788b7cc4a500a45b8",
     fundAmount: "1000000000000000000",
     keepersUpdateInterval: "30",
+    lensHub: ethers.constants.ZERO_ADDRESS,
+    mockProfileCreationProxy: ethers.constants.ZERO_ADDRESS,
+    feeFollowModule: ethers.constants.ZERO_ADDRESS,
   },
   31337: {
     name: "localhost",
@@ -16,7 +19,9 @@ const networkConfig = {
     jobId: "29fa9aa13bf1468788b7cc4a500a45b8",
     fundAmount: "1000000000000000000",
     keepersUpdateInterval: "30",
-    ethUsdPriceFeed: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+    lensHub: "0x038B86d9d8FAFdd0a02ebd1A476432877b0107C8",
+    mockProfileCreationProxy: "0x038B86d9d8FAFdd0a02ebd1A476432877b0107C8",
+    feeFollowModule: "0x1d80315fac6aBd3EfeEbE97dEc44461ba7556160",
   },
   80001: {
     name: "mumbai",
@@ -26,6 +31,8 @@ const networkConfig = {
     fee: "100000000000000000",
     fundAmount: "10000000000000000",
     lensHub: "0xd7B3481De00995046C7850bCe9a5196B7605c367",
+    mockProfileCreationProxy: "0x9BB48d8F9c4596b98C8bB1fB6D67aaE238F81CC2",
+    feeFollowModule: "0xfb7A602c73Ab80b314588A94574F26E7E459C236",
   },
 };
 

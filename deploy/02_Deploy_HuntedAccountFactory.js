@@ -5,28 +5,32 @@ const {
   VERIFICATION_BLOCK_CONFIRMATIONS,
 } = require("../helper-hardhat-config");
 const { verify } = require("../helper-functions");
+const { get } = require("react-hook-form");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
-  const { deploy, log } = deployments;
+  const { deploy, log, get } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId;
-  let linkTokenAddress;
-  let oracle;
 
   //set log level to ignore non errors
   ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR);
 
-  linkTokenAddress = networkConfig[chainId]["linkToken"];
-  oracle = networkConfig[chainId]["oracle"];
-
-  const jobId = ethers.utils.toUtf8Bytes(networkConfig[chainId]["jobId"]);
-  const fee = networkConfig[chainId]["fee"];
+  const lensHub = networkConfig[chainId]["lensHub"];
+  const mockProfileCreationProxy =
+    networkConfig[chainId]["mockProfileCreationProxy"];
+  const feeFollowModule = networkConfig[chainId]["feeFollowModule"];
+  const twitterVerifier = (await get("TwitterVerifier")).address;
 
   const waitBlockConfirmations = developmentChains.includes(network.name)
     ? 1
     : VERIFICATION_BLOCK_CONFIRMATIONS;
-  const args = [oracle, jobId, fee, linkTokenAddress];
-  const twitterVerifier = await deploy("TwitterVerifier", {
+  const args = [
+    lensHub,
+    mockProfileCreationProxy,
+    feeFollowModule,
+    twitterVerifier,
+  ];
+  const huntedAccountFactory = await deploy("HuntedAccountFactory", {
     from: deployer,
     args: args,
     log: true,
@@ -38,14 +42,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     process.env.ETHERSCAN_API_KEY
   ) {
     log("Verifying...");
-    await verify(twitterVerifier.address, args);
+    await verify(huntedAccountFactory.address, args);
   }
 
-  log("Run API Consumer contract with following command:");
-  const networkName = network.name == "hardhat" ? "localhost" : network.name;
-  log(
-    `yarn hardhat request-data --contract ${twitterVerifier.address} --network ${networkName}`
-  );
+  log(`Deployed to ${huntedAccountFactory.address}`);
   log("----------------------------------------------------");
 };
 module.exports.tags = ["all", "api", "main"];

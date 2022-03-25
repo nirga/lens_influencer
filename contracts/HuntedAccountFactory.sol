@@ -6,15 +6,24 @@ import "./HuntedAccount.sol";
 
 /// @title The HuntedAccountFactory allows users to create HuntedAccount
 contract HuntedAccountFactory {
-    address immutable HUB;
+    address immutable LENS_HUB;
+    address immutable MOCK_PROFILE_CREATION_PROXY;
+    address immutable FEE_FOLLOW_MODULE;
     address immutable TWITTER_VERIFIER;
 
     event HuntedAccountCreated(address huntedAccount);
 
     address[] public huntedAccounts;
 
-    constructor(address hub), address twitterVerifier {
-        HUB = hub;
+    constructor(
+        address lensHub,
+        address mockProfileCreationProxy,
+        address feeFollowModule,
+        address twitterVerifier
+    ) {
+        LENS_HUB = lensHub;
+        MOCK_PROFILE_CREATION_PROXY = mockProfileCreationProxy;
+        FEE_FOLLOW_MODULE = feeFollowModule;
         TWITTER_VERIFIER = twitterVerifier;
     }
 
@@ -24,7 +33,9 @@ contract HuntedAccountFactory {
         uint8 _royaltyFee
     ) public returns (address) {
         HuntedAccount instance = new HuntedAccount(
-            HUB,
+            LENS_HUB,
+            MOCK_PROFILE_CREATION_PROXY,
+            FEE_FOLLOW_MODULE,
             TWITTER_VERIFIER,
             _twitterProfile,
             _challenge,
@@ -34,7 +45,7 @@ contract HuntedAccountFactory {
         address addr = address(instance);
         huntedAccounts.push(addr);
         emit HuntedAccountCreated(address(instance));
-        
+
         return addr;
     }
 }
