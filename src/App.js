@@ -23,7 +23,7 @@ export default function App() {
   return (
     <Router>
       <div>
-        <div id="header" className="top-0 flex h-14">
+        <div id="header" className="top-0 flex h-16">
           <div className="flex my-auto mx-4"> 
             <Link to="/">
               <div className="flex">
