@@ -7,6 +7,7 @@ import {
   Link
 } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
+import Profile from "./pages/profile";
 import CreateProfile from "./pages/create-profile";
 import StakeProfile from "./pages/stake-profile";
 import ClaimProfile from "./pages/claim-profile";
@@ -40,6 +41,7 @@ export default function App() {
 
         <Routes>
           <Route exact path="/" element={<Dashboard/>}/>
+          <Route exact path="/profile" element={<Profile/>}/>
           <Route exact path="/create-profile" element={<CreateProfile/>}/>
           <Route exact path="/stake-profile" element={<StakeProfile/>}/>
           <Route exact path="/claim-profile" element={<ClaimProfile/>}/>
