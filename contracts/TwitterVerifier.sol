@@ -52,10 +52,11 @@ contract TwitterVerifier is ChainlinkClient {
      * Create a Chainlink request to retrieve API response, find the target price
      * data, then multiply by 100 (to remove decimal places from price).
      */
-    function verifyTweet(string memory tweetId, string memory challenge)
-        public
-        returns (bytes32 requestId)
-    {
+    function verifyTweet(
+        string memory username,
+        string memory tweetId,
+        string memory challenge
+    ) public returns (bytes32 requestId) {
         Chainlink.Request memory request = buildChainlinkRequest(
             jobId,
             address(this),
@@ -67,7 +68,9 @@ contract TwitterVerifier is ChainlinkClient {
                 "https://lfgrow-hack-influencer.netlify.app/.netlify/functions/app/?tweet=",
                 tweetId,
                 "&challenge=",
-                challenge
+                challenge,
+                "&username=",
+                username
             )
         );
         request.add("get", url);
