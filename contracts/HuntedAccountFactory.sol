@@ -8,6 +8,8 @@ import "./HuntedAccount.sol";
 contract HuntedAccountFactory {
     address immutable HUB;
 
+    address[] public huntedAccounts;
+
     constructor(address hub) {
         HUB = hub;
     }
@@ -21,6 +23,10 @@ contract HuntedAccountFactory {
             _twitterProfile,
             _royaltyFee
         );
-        return address(instance);
+
+        address addr = address(instance);
+        huntedAccounts.push(addr);
+
+        return addr;
     }
 }
