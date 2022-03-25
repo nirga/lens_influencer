@@ -77,7 +77,9 @@ function Profile() {
 
         const HuntedAccountContract = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
 
-        let stakedHuntAccount = await HuntedAccountContract.stake();
+        // data.stakeValue as value laater
+        const options = {value: ethers.utils.parseEther("0.1")}
+        let stakedHuntAccount = await HuntedAccountContract.stake(options);
         console.log(stakedHuntAccount)
       } else {
         console.log("Ethereum object doesn't exist!");
