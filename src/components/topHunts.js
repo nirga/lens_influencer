@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { getHuntedAccounts } from "../api/hunted_accounts";
 import { useAsync } from "react-use";
 import { enrichHuntedAccounts} from "../api/enrich_accounts";
+import {ethers} from "ethers";
 
 const staticProfiles = [{
     name: 'Rock',
@@ -65,7 +66,13 @@ function TopHunts() {
                                         </div>
                                     </div>
                                     <div className="my-auto font-semibold">
-                                        <div>$ {profile.totalAmountStaked.toNumber()}</div>
+                                        <div>{ethers.utils.formatEther(
+                                            profile.totalAmountStaked
+                                        )} MATIC (${(
+                                            ethers.utils.formatEther(
+                                                profile.totalAmountStaked
+                                            ) * 1.58
+                                        ).toFixed(2)})</div>
                                     </div>
                                 </div>
                             </Link>
