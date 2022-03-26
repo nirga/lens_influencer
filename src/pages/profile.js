@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAsync } from "react-use";
+import { useParams } from "react-router";
 import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
-import {
-  LENS_HUB_ADDRESS,
-  HUNTED_ACCOUNT_FACTORY_ADDRESS,
-} from "../utils/consts";
+import { HUNTED_ACCOUNT_FACTORY_ADDRESS } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
 
@@ -16,11 +13,10 @@ function Profile() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
   const onSubmit = (data) => stakeProfile(data);
-  let query = useQuery();
+  const { username } = useParams();
 
   const [currentAccount, setCurrentAccount] = useState("");
   const huntedAccountData = useAsync(async () => {
@@ -33,20 +29,13 @@ function Profile() {
       signer
     );
     const contract =
-      await HuntedAccountFactory.getHuntedAccountByTwitterProfile(
-        query.get("twitterHandle")
-      );
+      await HuntedAccountFactory.getHuntedAccountByTwitterProfile(username);
     console.log("Hunted Contract: " + contract);
     const balance = await provider.getBalance(contract);
     console.log("Balance: " + balance);
 
     return { contract, balance };
-  }, []);
-
-  function useQuery() {
-    const { search } = useLocation();
-    return React.useMemo(() => new URLSearchParams(search), [search]);
-  }
+  }, [username]);
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -111,8 +100,7 @@ function Profile() {
           signer
         );
 
-        // data.stakeValue as value laater
-        const options = { value: ethers.utils.parseEther("0.1") };
+        const options = { value: ethers.utils.parseEther(data.stakeValue) };
         let stakedHuntAccount = await HuntedAccountContract.stake(options);
         let awaitedStake = await stakedHuntAccount.wait();
         console.log(awaitedStake);
@@ -203,15 +191,13 @@ function Profile() {
                 <div className="h-16 w-16 bg-blue-300 rounded-full">
                   <div className="flex h-full">
                     <div className="m-auto text-2xl uppercase">
-                      {query.get("twitterHandle").charAt(0)}
+                      {username.charAt(0)}
                     </div>
                   </div>
                 </div>
               </div>
               <div className="flex w-full justify-between my-auto ml-4 pt-2">
-                <p className="text-lg font-bold ">
-                  @{query.get("twitterHandle")}
-                </p>
+                <p className="text-lg font-bold ">@{username}</p>
                 <p className="text-md font-bold mb-4">
                   {!huntedAccountData.loading &&
                     `Stake: ${ethers.utils.formatEther(

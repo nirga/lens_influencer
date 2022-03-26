@@ -37,8 +37,7 @@ function TopHunts() {
                             <Link
                                 key={profile.twitterProfile}
                                 to={{
-                                    pathname: "/profile",
-                                    search: `?twitterHandle=${profile.twitterProfile}`,
+                                    pathname: `/profile/${profile.twitterProfile}`,
                                 }}
                             >
                                 <div className="flex justify-between w-full py-2">
@@ -87,4 +86,3 @@ function TopHunts() {
 }
 
 export default TopHunts;
-
