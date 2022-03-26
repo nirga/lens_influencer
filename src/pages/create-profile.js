@@ -125,7 +125,7 @@ function CreateProfile() {
                 className="border-2 border-slate-200 w-full rounded-md px-2 py-2"
                 {...register("twitterHandle", { required: true })}
               />
-              {errors.twitterRequired && (
+              {errors.twitterHandle && (
                 <span className="text-red-500">Twitter handle is required</span>
               )}
 
