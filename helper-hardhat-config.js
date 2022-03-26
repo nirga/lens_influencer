@@ -11,18 +11,6 @@ const networkConfig = {
     mockProfileCreationProxy: ethers.constants.ZERO_ADDRESS,
     feeFollowModule: ethers.constants.ZERO_ADDRESS,
   },
-  31337: {
-    name: "localhost",
-    fee: "100000000000000000",
-    keyHash:
-      "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc",
-    jobId: "29fa9aa13bf1468788b7cc4a500a45b8",
-    fundAmount: "1000000000000000000",
-    keepersUpdateInterval: "30",
-    lensHub: "0x038B86d9d8FAFdd0a02ebd1A476432877b0107C8",
-    mockProfileCreationProxy: "0x038B86d9d8FAFdd0a02ebd1A476432877b0107C8",
-    feeFollowModule: "0x1d80315fac6aBd3EfeEbE97dEc44461ba7556160",
-  },
   80001: {
     name: "mumbai",
     linkToken: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB",

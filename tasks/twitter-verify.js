@@ -7,6 +7,7 @@ task(
     "The address of the API Consumer contract that you want to call"
   )
   .addParam("tweetid", "The tweet ID to verify")
+  .addParam("username", "The twitter username that should own the tweet id")
   .addParam("challenge", "The challenge to verify against")
   .setAction(async (taskArgs) => {
     const contractAddr = taskArgs.contract;
@@ -29,6 +30,7 @@ task(
       signer
     );
     var tx = await twitterVerifierContract.verifyTweet(
+      taskArgs.username,
       taskArgs.tweetid,
       taskArgs.challenge
     );
@@ -43,15 +45,12 @@ task(
     console.log(
       "Contract ",
       contractAddr,
-      " external data request successfully called. Transaction ID: ",
+      " external data request successfully comitted. Transaction ID: ",
       event.args.requestId
     );
     console.log("Run the following to read the returned result:");
     console.log(
-      "npx hardhat read-data --contract " +
-        contractAddr +
-        " --network " +
-        network.name
+      `npx hardhat get-verification --contract ${contractAddr} --transactionid ${event.args.requestId} --network ${network.name}`
     );
   });
 

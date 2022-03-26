@@ -10,23 +10,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, log, get } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId;
-  let linkTokenAddress;
-  let oracle;
 
   //set log level to ignore non errors
   ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR);
 
   console.log(`chainId = ${chainId}`);
-  if (chainId == 31337) {
-    let linkToken = await get("LinkToken");
-    let MockOracle = await get("MockOracle");
-    linkTokenAddress = linkToken.address;
-    oracle = MockOracle.address;
-    additionalMessage = " --linkaddress " + linkTokenAddress;
-  } else {
-    linkTokenAddress = networkConfig[chainId]["linkToken"];
-    oracle = networkConfig[chainId]["oracle"];
-  }
+  const linkTokenAddress = networkConfig[chainId]["linkToken"];
+  const oracle = networkConfig[chainId]["oracle"];
 
   const jobId = ethers.utils.toUtf8Bytes(networkConfig[chainId]["jobId"]);
   const fee = networkConfig[chainId]["fee"];
@@ -50,10 +40,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     await verify(twitterVerifier.address, args);
   }
 
-  log("Run API Consumer contract with following command:");
+  log("Run Twitter Verifier contract with following command:");
   const networkName = network.name == "hardhat" ? "localhost" : network.name;
   log(
-    `yarn hardhat request-data --contract ${twitterVerifier.address} --network ${networkName}`
+    `npx hardhat twitter-verify --contract ${twitterVerifier.address} --tweetid 1505977175488483339 --challenge Berlin --username elonmusk --network ${networkName}`
   );
   log("----------------------------------------------------");
 };
