@@ -91,7 +91,7 @@ contract HuntedAccount is AccessControl {
         MockProfileCreationProxy(MOCK_PROFILE_CREATION_PROXY)
             .proxyCreateProfile(profile);
         uint256 profileId = ILensHub(LENS_HUB).getProfileIdByHandle(
-            huntedProfile.twitterProfile
+            _twitterProfile
         );
 
         huntedProfile = HuntedProfile(
@@ -146,8 +146,6 @@ contract HuntedAccount is AccessControl {
             FEE_FOLLOW_MODULE,
             followModuleData
         );
-
-        // TODO: Transfer the profile NFT to the profile owner?
 
         // Transfer the staked assets (in MATIC) to the profile owner
         payable(huntedProfile.owner).transfer(totalAmountStaked);
