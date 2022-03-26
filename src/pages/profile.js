@@ -6,14 +6,12 @@ import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
 import {
-  LENS_HUB_ADDRESS,
   HUNTED_ACCOUNT_FACTORY_ADDRESS,
+  TWITTER_VERIFIER_ADDRESS
 } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
 import TwitterVerifierABI from "../utils/TwitterVerifier.json";
-
-const TWITTER_VERIFIER_ADDRESS = '';
 
 function Profile() {
   const {
@@ -128,30 +126,39 @@ function Profile() {
   };
 
   const claimProfile = async () => {
-    const huntedAccountContract = huntedAccountData.value.contract;
-
     try {
       const { ethereum } = window;
 
       if (ethereum) {
+        const huntedAccountContract = huntedAccountData.value.contract;
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
         const huntedAccount = new ethers.Contract(huntedAccountContract, HuntedAccountABI.abi, signer);
         const twitterVerifier = new ethers.Contract(TWITTER_VERIFIER_ADDRESS, TwitterVerifierABI.abi, signer);
 
+        console.log("hunted account:");
+        console.log(huntedAccount);
+        console.log("twitter verifier:")
+        console.log(TWITTER_VERIFIER_ADDRESS);
 
-        twitterVerifier.on("VerificationStarted", (requestId) => {
+        twitterVerifier.removeAllListeners("VerificationStarted");
+        twitterVerifier.removeAllListeners("VerificationCompleted");
+
+
+        twitterVerifier.once("VerificationStarted", (requestId) => {
           console.log(`Verification started for request id: ${requestId}`);
         });
 
-        twitterVerifier.on("VerificationCompleted", async (requestId, accountContract, isVerified) => {
+        twitterVerifier.once("VerificationCompleted", async (requestId, accountContract, isVerified) => {
           console.log(`Verification completed for request id: ${requestId}, account contract: ${accountContract}, result: ${isVerified}`);
 
           if (accountContract == huntedAccountContract && isVerified) {
             // TODO: support switching currency & fee
-            let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // MATIC TOKEN
+            let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // LINK TOKEN
             let fee = 5;
+
+            console.log("About to call claimProfile")
 
             await huntedAccount.claimProfile(fee, currency);
 
@@ -160,16 +167,20 @@ function Profile() {
         });
 
 
-        // let tweetId = '1234'
-        // console.log(`requesting verification for contract ${huntedAccountAddress}`);
-        // await huntedAccount.verifyProfileOwner(tweetId);
+        let tweetId = '1234'
+        console.log(`requesting verification for contract ${huntedAccountContract}`);
+        await huntedAccount.verifyProfileOwner(tweetId);
 
-        let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // MATIC TOKEN
-        let fee = 5;
+        // const filter = twitterVerifier.filters.VerificationCompleted(null, huntedAccountContract, null);
+        // const events = await twitterVerifier.queryFilter(filter, 'latest');
+        // console.log(events);
 
-        await huntedAccount.claimProfile(fee, currency);
+        // let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // MATIC TOKEN
+        // let fee = 5;
 
-        console.log("The account was successfully claimed!")
+        // await huntedAccount.claimProfile(fee, currency);
+
+        // console.log("The account was successfully claimed!")
       } else {
         console.log("Ethereum object doesn't exist!");
       }
