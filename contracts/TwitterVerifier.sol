@@ -75,8 +75,6 @@ contract TwitterVerifier is ChainlinkClient {
         );
         request.add("get", url);
         request.add("path", "data");
-        request.addInt("value", 1);
-        request.add("operator", "eq");
 
         // Sends the request
         bytes32 reqId = sendChainlinkRequestTo(oracle, request, fee);
@@ -92,10 +90,11 @@ contract TwitterVerifier is ChainlinkClient {
     /**
      * Receive the response in the form of string
      */
-    function fulfill(bytes32 _requestId, bool isVerified)
+    function fulfill(bytes32 _requestId, int256 retValue)
         public
         recordChainlinkFulfillment(_requestId)
     {
+        bool isVerified = retValue == int256(1);
         verifiedProfiles[_requestId].isVerified = isVerified;
         emit VerificationCompleted(
             _requestId,

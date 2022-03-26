@@ -15,7 +15,7 @@ const networkConfig = {
     name: "mumbai",
     linkToken: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
     oracle: "0x0bDDCD124709aCBf9BB3F824EbC61C87019888bb",
-    jobId: "a79e6eaf562f4be981d601cfbf8f8d84",
+    jobId: "52d54fc095ad4327a092354b31ee1d3e",
     fee: "100000000000000000",
     fundAmount: "10000000000000000",
     lensHub: "0xd7B3481De00995046C7850bCe9a5196B7605c367",
