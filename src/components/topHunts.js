@@ -1,39 +1,30 @@
+import React from 'react';
 import { Link } from "react-router-dom";
 import { getHuntedAccounts } from "../api/hunted_accounts";
 import { useAsync } from "react-use";
 import { enrichHuntedAccounts} from "../api/enrich_accounts";
 import {ethers} from "ethers";
 
-const staticProfiles = [{
-    name: 'Rock',
-    twitterHandle: 'the_rock',
-    reward: 549
-  },
-  {
-    name: 'Bennie',
-    twitterHandle: 'bennie_houston',
-    reward: 387
-  },
-  {
-    name: 'Tommy',
-    twitterHandle: 'tommy_lee',
-    reward: 376
-  },
-  {
-    name: 'Ariana',
-    twitterHandle: 'ariana_grande',
-    reward: 280
-  },
-  {
-    name: 'Christiano',
-    twitterHandle: 'cr7',
-    reward: 227
-  },
-]
+const sortAccounts = async (accounts) => {
+    accounts.sort(function(a, b){
+        if (a.profileHunted && !b.profileHunted) { // if a is claimed and b is not put b first
+            return 1
+        }
+        if (b.profileHunted && !a.profileHunted) { // if b is claimed and a is not put a first
+            return -1
+        }
+        if (b.totalAmountStaked.gte(a.totalAmountStaked)) { //if b is greater than a put b first
+            return 1
+        }
+        return -1
+    });
+    return accounts
+}
+
 
 function TopHunts() {
     const profiles = useAsync( async () => {
-        return enrichHuntedAccounts(await getHuntedAccounts())
+        return sortAccounts(await enrichHuntedAccounts(await getHuntedAccounts()))
     },[]);
 
     return (
@@ -64,6 +55,17 @@ function TopHunts() {
                                         <div className="m-auto ml-4">
                                             <p>@{profile.twitterProfile}</p>
                                         </div>
+                                        {profile.profileHunted &&
+                                        <div className="m-auto ml-4">
+                                            <div className="h-7 w-20 bg-green-300 rounded">
+                                                <div className="flex h-full">
+                                                    <div className="m-auto">
+                                                        claimed
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        }
                                     </div>
                                     <div className="my-auto font-semibold">
                                         <div>{ethers.utils.formatEther(
@@ -85,3 +87,4 @@ function TopHunts() {
 }
 
 export default TopHunts;
+
