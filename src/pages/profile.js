@@ -22,6 +22,7 @@ function Profile() {
   const { username } = useParams();
 
   const [currentAccount, setCurrentAccount] = useState("");
+  const [loading, setLoading] = useState(false);
   const huntedAccountData = useAsync(async () => {
     const { ethereum } = window;
     const provider = new ethers.providers.Web3Provider(ethereum);
@@ -103,51 +104,13 @@ function Profile() {
           HuntedAccountABI.abi,
           signer
         );
-
+        
+        setLoading(true)
         const options = { value: ethers.utils.parseEther(data.stakeValue) };
         let stakedHuntAccount = await HuntedAccountContract.stake(options);
         let awaitedStake = await stakedHuntAccount.wait();
         console.log(awaitedStake);
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const claimProfile = async (tweetId, followFee, followCurrency) => {
-    try {
-      const { ethereum } = window;
-
-      if (ethereum) {
-        const huntedAccountContract = huntedAccountData.value.contract;
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-
-        const huntedAccount = new ethers.Contract(huntedAccountContract, HuntedAccountABI.abi, signer.connectUnchecked());
-        const twitterVerifier = new ethers.Contract(TWITTER_VERIFIER_ADDRESS, TwitterVerifierABI.abi, signer);
-
-        twitterVerifier.removeAllListeners("VerificationStarted");
-        twitterVerifier.removeAllListeners("VerificationCompleted");
-
-        twitterVerifier.once("VerificationCompleted", async (requestId, accountContract, isVerified) => {
-          console.log(`Verification completed for request id: ${requestId}, account contract: ${accountContract}, result: ${isVerified}`);
-
-          if (accountContract == huntedAccountContract && isVerified) {
-            // // TODO: support currency selection - ONLY WHITELISTED CURRENCIES!!!
-            // let currency = '0x9c3c9283d3e44854697cd22d3faa240cfb032889'; // WMATIC TOKEN
-            // // TODO: support fee selection - ONLY GREATER THEN BPS_MAX (10,000)!!!
-            // let fee = 100000;
-
-            await huntedAccount.claimProfile(followFee, followCurrency);
-
-            console.log("Profile claimed successfully!")
-          }
-        });
-
-        await huntedAccount.verifyProfileOwner(tweetId);
-        console.log("Verifying profile...");
+        setLoading(false)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -237,37 +200,23 @@ function Profile() {
                     </span>
                   )}
                 </div>
-                <div className="">
-                  {/*
-                   * If there is no currentAccount render this button
-                   */}
-                  {!currentAccount && (
+                {loading ? 
+                  <button disabled>
                     <div className="flex">
-                      <button
-                        className="bg-blue-600 py-2 px-4 text-white rounded-md"
-                        onClick={connectWallet}
-                      >
-                        Connect Wallet
-                      </button>
-                      <p className="mt-2 mx-2">Then u can</p>
-                      <button
-                        disabled
-                        className="disabled:bg-blue-400 py-2 px-4 text-white rounded-md"
-                      >
-                        Stake
-                      </button>
+                      <p className="bg-blue-400 text-white px-8 py-2 rounded-lg">
+                        Processing
+                      </p>
                     </div>
-                  )}
-                  {currentAccount && (
-                    <button type="submit">
-                      <div className="flex">
-                        <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
-                          Stake
-                        </p>
-                      </div>
-                    </button>
-                  )}
-                </div>
+                  </button>
+                  : 
+                  <button type="submit">
+                    <div className="flex">
+                      <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                        Stake
+                      </p>
+                    </div>
+                  </button>
+                }
               </form>
             </div>
           </div>
