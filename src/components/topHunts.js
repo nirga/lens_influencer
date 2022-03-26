@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { getHuntedAccounts } from "../api/hunted_accounts";
+import {enrichAccount, enrichHuntedAccounts} from "../api/enrich_accounts";
 
 const staticProfiles = [{
     name: 'Rock',
@@ -29,7 +30,7 @@ const staticProfiles = [{
 ]
 
 async function TopHunts() {
-    const profiles = await getHuntedAccounts()
+    const profiles = await enrichHuntedAccounts(await getHuntedAccounts())
     return (
         <div className="col-span-2">
             <div className="pt-4">
