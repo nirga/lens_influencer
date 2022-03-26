@@ -6,9 +6,10 @@ import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
 import ModalTrigger from "../components/modal-trigger";
-import { HUNTED_ACCOUNT_FACTORY_ADDRESS } from "../utils/consts";
+import { HUNTED_ACCOUNT_FACTORY_ADDRESS, TWITTER_VERIFIER_ADDRESS } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
+import TwitterVerifierABI from "../utils/TwitterVerifier.json";
 import { enrichAccount } from "../api/enrich_accounts";
 
 function Profile() {
@@ -107,6 +108,46 @@ function Profile() {
         let stakedHuntAccount = await HuntedAccountContract.stake(options);
         let awaitedStake = await stakedHuntAccount.wait();
         console.log(awaitedStake);
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const claimProfile = async (tweetId, followFee, followCurrency) => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const huntedAccountContract = huntedAccountData.value.contract;
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const huntedAccount = new ethers.Contract(huntedAccountContract, HuntedAccountABI.abi, signer.connectUnchecked());
+        const twitterVerifier = new ethers.Contract(TWITTER_VERIFIER_ADDRESS, TwitterVerifierABI.abi, signer);
+
+        twitterVerifier.removeAllListeners("VerificationStarted");
+        twitterVerifier.removeAllListeners("VerificationCompleted");
+
+        twitterVerifier.once("VerificationCompleted", async (requestId, accountContract, isVerified) => {
+          console.log(`Verification completed for request id: ${requestId}, account contract: ${accountContract}, result: ${isVerified}`);
+
+          if (accountContract == huntedAccountContract && isVerified) {
+            // // TODO: support currency selection - ONLY WHITELISTED CURRENCIES!!!
+            // let currency = '0x9c3c9283d3e44854697cd22d3faa240cfb032889'; // WMATIC TOKEN
+            // // TODO: support fee selection - ONLY GREATER THEN BPS_MAX (10,000)!!!
+            // let fee = 100000;
+
+            await huntedAccount.claimProfile(followFee, followCurrency);
+
+            console.log("Profile claimed successfully!")
+          }
+        });
+
+        await huntedAccount.verifyProfileOwner(tweetId);
+        console.log("Verifying profile...");
       } else {
         console.log("Ethereum object doesn't exist!");
       }
