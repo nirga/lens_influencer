@@ -7,9 +7,9 @@ function Navigation() {
         <Link to="/" className="text-lg mr-4 font-medium">
           Dashboard
         </Link>
-        <Link to="/stakes" className="text-lg mr-4 font-medium">
+        {/* <Link to="/stakes" className="text-lg mr-4 font-medium">
           Stakes{" "}
-        </Link>
+        </Link> */}
 
         <hr className="mt-5" />
 
