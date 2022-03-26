@@ -169,7 +169,7 @@ function CreateProfile() {
             </div>
             <div className="">After you created the profile ...</div>
             <div className="">
-              ... navigate to /profile?twitterHandle=YOUR_TWITTER_HANDLE and
+              ... navigate to /profile/yourTwitterHandle and
               claim it!
             </div>
           </div>
