@@ -9,6 +9,7 @@ import ModalTrigger from "../components/modal-trigger";
 import { HUNTED_ACCOUNT_FACTORY_ADDRESS } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
+import { enrichAccount } from "../api/enrich_accounts";
 
 function Profile() {
   const {
@@ -32,10 +33,11 @@ function Profile() {
     const contract =
       await HuntedAccountFactory.getHuntedAccountByTwitterProfile(username);
     console.log("Hunted Contract: " + contract);
-    const balance = await provider.getBalance(contract);
+    const { totalAmountStaked: balance, profileHunted: isHunted } =
+      await enrichAccount(contract, signer);
     console.log("Balance: " + balance);
 
-    return { contract, balance };
+    return { contract, balance, isHunted };
   }, [username]);
 
   const checkIfWalletIsConnected = async () => {
@@ -125,13 +127,15 @@ function Profile() {
           <div className="bg-white w-full rounded-lg py-4 px-4">
             <div className="flex justify-between">
               <p className="text-md mb-4">Hunting Profile</p>
-              <div className="flex">
-                <ModalTrigger>
-                  <button className="bg-blue-600 text-white px-8 py-2 rounded-lg">
-                    Claim
-                  </button>
-                </ModalTrigger>
-              </div>
+              {!huntedAccountData.loading && !huntedAccountData.value.isHunted && (
+                <div className="flex">
+                  <ModalTrigger>
+                    <button className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                      Claim
+                    </button>
+                  </ModalTrigger>
+                </div>
+              )}
             </div>
             <div className="flex mt-4">
               <div className="my-auto">
@@ -159,70 +163,74 @@ function Profile() {
             </div>
           </div>
         </div>
-        <div className="pt-4">
-          <div className="bg-slate-200 w-full rounded-lg py-4 px-4">
-            <p className="text-md font-bold mb-4">
-              This profile has not been claimed yet
-            </p>
-            <p className="text-md">
-              You can stake to share in this influencer's future earnings below
-              ...
-            </p>
-            <p className="text-md mb-4">
-              ... or claim this profile if it should be yours.
-            </p>
-            <p className="text-md font-bold mt-8 mb-2">
-              Stake MATIC in this profile
-            </p>
-            <form
-              className="flex w-full justify-between"
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              {/* register your input into the hook by invoking the "register" function */}
-              <div className="flex flex-col">
-                <input
-                  placeholder="amount"
-                  {...register("stakeValue", { required: true })}
-                  className="border-2 border-slate-200 rounded-md px-2 py-2 text-center"
-                />
-                {errors.stakeValue && (
-                  <span className="text-red-500">stake value is required</span>
-                )}
-              </div>
-              <div className="">
-                {/*
-                 * If there is no currentAccount render this button
-                 */}
-                {!currentAccount && (
-                  <div className="flex">
-                    <button
-                      className="bg-blue-600 py-2 px-4 text-white rounded-md"
-                      onClick={connectWallet}
-                    >
-                      Connect Wallet
-                    </button>
-                    <p className="mt-2 mx-2">Then u can</p>
-                    <button
-                      disabled
-                      className="disabled:bg-blue-400 py-2 px-4 text-white rounded-md"
-                    >
-                      Stake
-                    </button>
-                  </div>
-                )}
-                {currentAccount && (
-                  <button type="submit">
+        {!huntedAccountData.loading && !huntedAccountData.value.isHunted && (
+          <div className="pt-4">
+            <div className="bg-slate-200 w-full rounded-lg py-4 px-4">
+              <p className="text-md font-bold mb-4">
+                This profile has not been claimed yet
+              </p>
+              <p className="text-md">
+                You can stake to share in this influencer's future earnings
+                below ...
+              </p>
+              <p className="text-md mb-4">
+                ... or claim this profile if it should be yours.
+              </p>
+              <p className="text-md font-bold mt-8 mb-2">
+                Stake MATIC in this profile
+              </p>
+              <form
+                className="flex w-full justify-between"
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                {/* register your input into the hook by invoking the "register" function */}
+                <div className="flex flex-col">
+                  <input
+                    placeholder="amount"
+                    {...register("stakeValue", { required: true })}
+                    className="border-2 border-slate-200 rounded-md px-2 py-2 text-center"
+                  />
+                  {errors.stakeValue && (
+                    <span className="text-red-500">
+                      stake value is required
+                    </span>
+                  )}
+                </div>
+                <div className="">
+                  {/*
+                   * If there is no currentAccount render this button
+                   */}
+                  {!currentAccount && (
                     <div className="flex">
-                      <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                      <button
+                        className="bg-blue-600 py-2 px-4 text-white rounded-md"
+                        onClick={connectWallet}
+                      >
+                        Connect Wallet
+                      </button>
+                      <p className="mt-2 mx-2">Then u can</p>
+                      <button
+                        disabled
+                        className="disabled:bg-blue-400 py-2 px-4 text-white rounded-md"
+                      >
                         Stake
-                      </p>
+                      </button>
                     </div>
-                  </button>
-                )}
-              </div>
-            </form>
+                  )}
+                  {currentAccount && (
+                    <button type="submit">
+                      <div className="flex">
+                        <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                          Stake
+                        </p>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <TopHunts />
     </div>
