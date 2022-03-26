@@ -125,7 +125,7 @@ function Profile() {
     }
   };
 
-  const claimProfile = async () => {
+  const claimProfile = async (tweetId, followFee, followCurrency) => {
     try {
       const { ethereum } = window;
 
@@ -134,53 +134,29 @@ function Profile() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        const huntedAccount = new ethers.Contract(huntedAccountContract, HuntedAccountABI.abi, signer);
+        const huntedAccount = new ethers.Contract(huntedAccountContract, HuntedAccountABI.abi, signer.connectUnchecked());
         const twitterVerifier = new ethers.Contract(TWITTER_VERIFIER_ADDRESS, TwitterVerifierABI.abi, signer);
-
-        console.log("hunted account:");
-        console.log(huntedAccount);
-        console.log("twitter verifier:")
-        console.log(TWITTER_VERIFIER_ADDRESS);
 
         twitterVerifier.removeAllListeners("VerificationStarted");
         twitterVerifier.removeAllListeners("VerificationCompleted");
-
-
-        twitterVerifier.once("VerificationStarted", (requestId) => {
-          console.log(`Verification started for request id: ${requestId}`);
-        });
 
         twitterVerifier.once("VerificationCompleted", async (requestId, accountContract, isVerified) => {
           console.log(`Verification completed for request id: ${requestId}, account contract: ${accountContract}, result: ${isVerified}`);
 
           if (accountContract == huntedAccountContract && isVerified) {
-            // TODO: support switching currency & fee
-            let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // LINK TOKEN
-            let fee = 5;
+            // // TODO: support currency selection - ONLY WHITELISTED CURRENCIES!!!
+            // let currency = '0x9c3c9283d3e44854697cd22d3faa240cfb032889'; // WMATIC TOKEN
+            // // TODO: support fee selection - ONLY GREATER THEN BPS_MAX (10,000)!!!
+            // let fee = 100000;
 
-            console.log("About to call claimProfile")
+            await huntedAccount.claimProfile(followFee, followCurrency);
 
-            await huntedAccount.claimProfile(fee, currency);
-
-            console.log("The account was successfully claimed!")
+            console.log("Profile claimed successfully!")
           }
         });
 
-
-        let tweetId = '1234'
-        console.log(`requesting verification for contract ${huntedAccountContract}`);
         await huntedAccount.verifyProfileOwner(tweetId);
-
-        // const filter = twitterVerifier.filters.VerificationCompleted(null, huntedAccountContract, null);
-        // const events = await twitterVerifier.queryFilter(filter, 'latest');
-        // console.log(events);
-
-        // let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // MATIC TOKEN
-        // let fee = 5;
-
-        // await huntedAccount.claimProfile(fee, currency);
-
-        // console.log("The account was successfully claimed!")
+        console.log("Verifying profile...");
       } else {
         console.log("Ethereum object doesn't exist!");
       }
