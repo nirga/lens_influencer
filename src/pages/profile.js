@@ -100,8 +100,7 @@ function Profile() {
           signer
         );
 
-        // data.stakeValue as value laater
-        const options = { value: ethers.utils.parseEther("0.1") };
+        const options = { value: ethers.utils.parseEther(data.stakeValue) };
         let stakedHuntAccount = await HuntedAccountContract.stake(options);
         let awaitedStake = await stakedHuntAccount.wait();
         console.log(awaitedStake);
