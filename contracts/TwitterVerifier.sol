@@ -14,7 +14,7 @@ contract TwitterVerifier is ChainlinkClient {
     event VerificationStarted(bytes32 requestId);
     event VerificationCompleted(
         bytes32 requestId,
-        address accountContract,
+        address indexed accountContract,
         bool isVerified
     );
 

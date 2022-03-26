@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
 import HuntedAccountABI from '../utils/HuntedAccount.json'
+import TwitterVerifierABI from '../utils/TwitterVerifier.json'
 
 function Profile() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -13,7 +14,8 @@ function Profile() {
 
   const [currentAccount, setCurrentAccount] = useState("");
   // TODO: make dynamic!! Q: how -> get contract via twitterHandle possible?
-  const huntedAccountAddress = "0x844b22ddd26878bec013006b8fab518b29079443";
+  const huntedAccountAddress = "0xe21217bc722cbe1293d1ed16997625f308f1514b";
+  const twitterVerifierAddress = "0x87F240322a450dc9CAF17bCedA02af24B5713D9e";
 
   function useQuery() {
     const { search } = useLocation();
@@ -99,19 +101,33 @@ function Profile() {
         const signer = provider.getSigner();
 
         const huntedAccount = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
+        const twitterVerifier = new ethers.Contract(twitterVerifierAddress, TwitterVerifierABI.abi, signer);
 
-        let tweetId = 'tweety'
-        console.log(`requesting verification for contract ${huntedAccountAddress}`);
-        const verifyTx = await huntedAccount.verifyProfileOwner(tweetId);
-        console.log("verify requested");
-        const receipt = await verifyTx.wait();
-        console.log("reciept arrived");
-        const events = receipt?.events;
 
-        console.log(events)
+        twitterVerifier.on("VerificationStarted", (requestId) => {
+          console.log(`Verification started for request id: ${requestId}`);
+        });
 
-        // TODO: support switching currency & fee
-        let currency = '0x0000000000000000000000000000000000001010'; // MATIC TOKEN
+        twitterVerifier.on("VerificationCompleted", async (requestId, accountContract, isVerified) => {
+          console.log(`Verification completed for request id: ${requestId}, account contract: ${accountContract}, result: ${isVerified}`);
+
+          if (accountContract == huntedAccountAddress && isVerified) {
+            // TODO: support switching currency & fee
+            let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // MATIC TOKEN
+            let fee = 5;
+
+            await huntedAccount.claimProfile(fee, currency);
+
+            console.log("The account was successfully claimed!")
+          }
+        });
+
+
+        // let tweetId = '1234'
+        // console.log(`requesting verification for contract ${huntedAccountAddress}`);
+        // await huntedAccount.verifyProfileOwner(tweetId);
+
+        let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // MATIC TOKEN
         let fee = 5;
 
         await huntedAccount.claimProfile(fee, currency);
