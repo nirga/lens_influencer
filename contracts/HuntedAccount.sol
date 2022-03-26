@@ -50,7 +50,7 @@ contract HuntedAccount is AccessControl {
     uint256 public totalAmountStaked;
     uint256 public totalRoyaltiesWithdrawn;
     address _feesCurrency;
-    bool _profileHunted;
+    bool public profileHunted;
 
     // Emitted when amount of tokens had been staked by a hunter
     event Stake(
@@ -82,7 +82,7 @@ contract HuntedAccount is AccessControl {
         challenge = _challenge;
         totalAmountStaked = 0;
         royaltyFee = _royaltyFee;
-        _profileHunted = false;
+        profileHunted = false;
 
         DataTypes.CreateProfileData memory profile;
         profile.to = address(this);
@@ -104,7 +104,7 @@ contract HuntedAccount is AccessControl {
     }
 
     function stake() external payable {
-        require(!_profileHunted);
+        require(!profileHunted);
         require(msg.value > 0);
 
         hunters[msg.sender].amountStaked += msg.value;
@@ -153,7 +153,7 @@ contract HuntedAccount is AccessControl {
         payable(_huntedProfile.owner).transfer(totalAmountStaked);
 
         // Mark that the profile was hunted in-order to avoid future staking
-        _profileHunted = true;
+        profileHunted = true;
     }
 
     function withdrawOwnerRewards() external {
