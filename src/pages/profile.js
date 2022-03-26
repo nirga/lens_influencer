@@ -9,6 +9,7 @@ import ModalTrigger from "../components/modal-trigger";
 import { HUNTED_ACCOUNT_FACTORY_ADDRESS, TWITTER_VERIFIER_ADDRESS } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
+import TwitterVerifierABI from "../utils/TwitterVerifier.json";
 
 function Profile() {
   const {
