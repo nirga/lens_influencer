@@ -40,6 +40,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     await verify(twitterVerifier.address, args);
   }
 
+  log("Don't forget to fund the TwitterVerifier Contract. command:");
+  log(
+    `npx hardhat fund-link --contract ${twitterVerifier.address} --network mumbai --fundamount 1000000000000000000                                                         `
+  );
   log("Run Twitter Verifier contract with following command:");
   const networkName = network.name == "hardhat" ? "localhost" : network.name;
   log(
