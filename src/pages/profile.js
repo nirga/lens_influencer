@@ -101,11 +101,15 @@ function Profile() {
 
         const HuntedAccountContract = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
 
-        // data.stakeValue as value laater
-        const options = {value: ethers.utils.parseEther("0.1")}
-        let stakedHuntAccount = await HuntedAccountContract.stake(options);
-        let awaitedStake = await stakedHuntAccount.wait()
-        console.log(awaitedStake)
+        const options = {
+          
+        }
+        
+        let claimedAccount = await HuntedAccountContract.claimProfile(options);
+        
+        await claimedAccount.wait()
+
+        console.log("The account was successfully claimed!")
       } else {
         console.log("Ethereum object doesn't exist!");
       }
