@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAsync } from "react-use";
 import { useParams } from "react-router";
@@ -6,10 +6,9 @@ import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
 import ModalTrigger from "../components/modal-trigger";
-import { HUNTED_ACCOUNT_FACTORY_ADDRESS, TWITTER_VERIFIER_ADDRESS } from "../utils/consts";
+import { HUNTED_ACCOUNT_FACTORY_ADDRESS } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
-import TwitterVerifierABI from "../utils/TwitterVerifier.json";
 import { enrichAccount } from "../api/enrich_accounts";
 
 function Profile() {
@@ -21,7 +20,6 @@ function Profile() {
   const onSubmit = (data) => stakeProfile(data);
   const { username } = useParams();
 
-  const [currentAccount, setCurrentAccount] = useState("");
   const [loading, setLoading] = useState(false);
   const huntedAccountData = useAsync(async () => {
     const { ethereum } = window;
@@ -41,54 +39,6 @@ function Profile() {
 
     return { contract, balance, isHunted };
   }, [username]);
-
-  const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        console.log("Make sure you have metamask!");
-        return;
-      } else {
-        console.log("We have the ethereum object", ethereum);
-      }
-
-      /*
-       * Check if we're authorized to access the user's wallet
-       */
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Found an authorized account:", account);
-        setCurrentAccount(account);
-      } else {
-        console.log("No authorized account found");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        alert("Get MetaMask!");
-        return;
-      }
-
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-
-      console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const stakeProfile = async (data) => {
     try {
@@ -118,10 +68,6 @@ function Profile() {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    checkIfWalletIsConnected();
-  }, []);
 
   return (
     <div className="grid grid-cols-6 gap-4 px-4 bg-slate-50">
