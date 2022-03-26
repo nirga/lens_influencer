@@ -4,34 +4,6 @@ import { useAsync } from "react-use";
 import { enrichHuntedAccounts } from "../api/enrich_accounts";
 import { ethers } from "ethers";
 
-const staticProfiles = [
-  {
-    name: "Rock",
-    twitterHandle: "the_rock",
-    reward: 549,
-  },
-  {
-    name: "Bennie",
-    twitterHandle: "bennie_houston",
-    reward: 387,
-  },
-  {
-    name: "Tommy",
-    twitterHandle: "tommy_lee",
-    reward: 376,
-  },
-  {
-    name: "Ariana",
-    twitterHandle: "ariana_grande",
-    reward: 280,
-  },
-  {
-    name: "Christiano",
-    twitterHandle: "cr7",
-    reward: 227,
-  },
-];
-
 function TopHunts() {
   const profiles = useAsync(async () => {
     return enrichHuntedAccounts(await getHuntedAccounts());
