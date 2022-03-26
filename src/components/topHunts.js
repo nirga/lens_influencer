@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { getHuntedAccounts } from "../api/hunted_accounts";
 
 const staticProfiles = [{
     name: 'Rock',
@@ -27,47 +28,48 @@ const staticProfiles = [{
   },
 ]
 
-function TopHunts() {  
-  return (
-    <div className="col-span-2">
-        <div className="pt-4">
-            <div className="bg-white w-full rounded-lg">
-                <div id="hunts" className="py-4 px-4">
-                    <p className="text-md font-bold mb-4">Top pending hunts</p>
-                    {staticProfiles.map((profile) => ( 
-                        <Link
-                            key={profile.twitterHandle}
-                            to={{
-                                pathname: "/profile",
-                                search: `?twitterHandle=${profile.twitterHandle}`,
-                            }}
-                        >
-                            <div className="flex justify-between w-full py-2">
-                                <div className="flex">
-                                    <div className="m-auto">
-                                        <div className="h-10 w-10 bg-blue-300 rounded-full">
-                                            <div className="flex h-full">
-                                                <div className="m-auto uppercase">
-                                                    {profile.twitterHandle.charAt(0)}
+async function TopHunts() {
+    const profiles = await getHuntedAccounts()
+    return (
+        <div className="col-span-2">
+            <div className="pt-4">
+                <div className="bg-white w-full rounded-lg">
+                    <div id="hunts" className="py-4 px-4">
+                        <p className="text-md font-bold mb-4">Top pending hunts</p>
+                        {profiles.map((profile) => (
+                            <Link
+                                key={profile.twitterHandle}
+                                to={{
+                                    pathname: "/profile",
+                                    search: `?twitterHandle=${profile.twitterHandle}`,
+                                }}
+                            >
+                                <div className="flex justify-between w-full py-2">
+                                    <div className="flex">
+                                        <div className="m-auto">
+                                            <div className="h-10 w-10 bg-blue-300 rounded-full">
+                                                <div className="flex h-full">
+                                                    <div className="m-auto uppercase">
+                                                        {profile.twitterHandle.charAt(0)}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="m-auto ml-4">
+                                            <p>@{profile.twitterHandle}</p>
+                                        </div>
                                     </div>
-                                    <div className="m-auto ml-4">
-                                        <p>@{profile.twitterHandle}</p>
+                                    <div className="my-auto font-semibold">
+                                        <div>$ {profile.reward}</div>
                                     </div>
                                 </div>
-                                <div className="my-auto font-semibold">
-                                    <div>$ {profile.reward}</div>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-  );
+    );
 }
 
 export default TopHunts;
