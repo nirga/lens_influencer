@@ -15,6 +15,7 @@ function CreateProfile() {
   const onSubmit = (data) => createHuntedAccount(data);
 
   const [currentAccount, setCurrentAccount] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -74,6 +75,7 @@ function CreateProfile() {
       const { ethereum } = window;
 
       if (ethereum) {
+        setLoading(true)
         console.log("Ethereum object exists");
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
@@ -91,6 +93,7 @@ function CreateProfile() {
         );
         let awaitedHuntedAccount = await huntedAccount.wait();
         console.log(awaitedHuntedAccount);
+        setLoading(false)
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -129,35 +132,24 @@ function CreateProfile() {
                 <span className="text-red-500">Twitter handle is required</span>
               )}
 
-              <div className="w-full flex justify-end mt-4">
-                {/*
-                 * If there is no currentAccount render this button
-                 */}
-                {!currentAccount && (
-                  <div className="flex">
-                    <button
-                      className="bg-blue-600 py-2 px-4 text-white rounded-md"
-                      onClick={connectWallet}
-                    >
-                      Connect Wallet
-                    </button>
-                    <p className="mt-2 mx-2">Then u can</p>
-                    <button
-                      disabled
-                      className="disabled:bg-blue-400 py-2 px-4 text-white rounded-md"
-                      onClick={connectWallet}
-                    >
-                      Create Profile
-                    </button>
-                  </div>
-                )}
-                {currentAccount && (
-                  <input
-                    type="submit"
-                    value="Create Profile"
-                    className="bg-blue-600 py-2 px-4 text-white rounded-md"
-                  />
-                )}
+              <div className="w-full flex justify-end mt-4"> 
+                {loading ? 
+                  <button disabled>
+                    <div className="flex">
+                      <p className="bg-blue-400 text-white px-8 py-2 rounded-lg">
+                        Processing
+                      </p>
+                    </div>
+                  </button>
+                  : 
+                  <button type="submit">
+                    <div className="flex">
+                      <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                        Create Profile
+                      </p>
+                    </div>
+                  </button>
+                }
               </div>
             </form>
           </div>
