@@ -6,10 +6,9 @@ import { ethers } from "ethers";
 import Navigation from "../components/navigation";
 import TopHunts from "../components/topHunts";
 import ModalTrigger from "../components/modal-trigger";
-import { HUNTED_ACCOUNT_FACTORY_ADDRESS, TWITTER_VERIFIER_ADDRESS } from "../utils/consts";
+import { HUNTED_ACCOUNT_FACTORY_ADDRESS } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
-import TwitterVerifierABI from "../utils/TwitterVerifier.json";
 import { enrichAccount } from "../api/enrich_accounts";
 
 function Profile() {
@@ -104,13 +103,13 @@ function Profile() {
           HuntedAccountABI.abi,
           signer
         );
-        
-        setLoading(true)
+
+        setLoading(true);
         const options = { value: ethers.utils.parseEther(data.stakeValue) };
         let stakedHuntAccount = await HuntedAccountContract.stake(options);
         let awaitedStake = await stakedHuntAccount.wait();
         console.log(awaitedStake);
-        setLoading(false)
+        setLoading(false);
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -133,7 +132,7 @@ function Profile() {
               <p className="text-md mb-4">Hunting Profile</p>
               {!huntedAccountData.loading && !huntedAccountData.value.isHunted && (
                 <div className="flex">
-                  <ModalTrigger>
+                  <ModalTrigger contract={huntedAccountData.value.contract}>
                     <button className="bg-blue-600 text-white px-8 py-2 rounded-lg">
                       Claim
                     </button>
@@ -200,7 +199,7 @@ function Profile() {
                     </span>
                   )}
                 </div>
-                {loading ? 
+                {loading ? (
                   <button disabled>
                     <div className="flex">
                       <p className="bg-blue-400 text-white px-8 py-2 rounded-lg">
@@ -208,7 +207,7 @@ function Profile() {
                       </p>
                     </div>
                   </button>
-                  : 
+                ) : (
                   <button type="submit">
                     <div className="flex">
                       <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
@@ -216,7 +215,7 @@ function Profile() {
                       </p>
                     </div>
                   </button>
-                }
+                )}
               </form>
             </div>
           </div>

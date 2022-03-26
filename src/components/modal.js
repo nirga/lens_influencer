@@ -1,32 +1,32 @@
-import React, { useState } from 'react';
-import classNames from 'classnames';
+import React, { useState } from "react";
+import classNames from "classnames";
 
-import VerifyForm from './verify-form';
+import VerifyForm from "./verify-form";
 
-const Modal = ( onClose ) => {
+const Modal = (props) => {
   const background = React.createRef();
   const [visible, toggleVisibility] = useState(true);
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     event.preventDefault();
     toggleVisibility(false);
-    setTimeout(onClose, 500);
+    setTimeout(props.onClose, 500);
   };
 
   return (
     <div
       className={classNames({
-        'text-black-900 fixed inset-0 flex align-middle justify-center z-30 mx-auto transform transition-all ease-in-out duration-500 animate-opacity-0-to-1': true,
-        'opacity-100': visible,
-        'opacity-0': !visible,
+        "text-black-900 fixed inset-0 flex align-middle justify-center z-30 mx-auto transform transition-all ease-in-out duration-500 animate-opacity-0-to-1": true,
+        "opacity-100": visible,
+        "opacity-0": !visible,
       })}
       role="dialog"
     >
       <div
         className={classNames({
-          'w-2/3 h-auto my-auto z-50 px-8 pt-2 pb-16 max-w-4xl shadow-2xl bg-white transform transition-all duration-500 ease-in-out sm:px-12 animate-translate-y-top-full-animation': true,
-          'translate-y-0': visible,
-          '-translate-y-full': !visible,
+          "w-2/3 h-auto my-auto z-50 px-8 pt-2 pb-16 max-w-4xl shadow-2xl bg-white transform transition-all duration-500 ease-in-out sm:px-12 animate-translate-y-top-full-animation": true,
+          "translate-y-0": visible,
+          "-translate-y-full": !visible,
         })}
       >
         <button
@@ -36,7 +36,10 @@ const Modal = ( onClose ) => {
           ×
         </button>
         <div className="mt-6">
-          <VerifyForm />
+          <VerifyForm
+            contract={props.contract}
+            toggleVisibility={toggleVisibility}
+          />
         </div>
       </div>
       <button

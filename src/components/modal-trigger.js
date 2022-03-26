@@ -1,21 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
-import Modal from './modal'
+import Modal from "./modal";
 
-const ModalTrigger = props => {
-  const [isModalOpen, toggleModal] = useState(false)
-  const toggle = () => toggleModal(!isModalOpen)
+const ModalTrigger = (props) => {
+  const [isModalOpen, toggleModal] = useState(false);
+  const toggle = () => toggleModal(!isModalOpen);
 
   return (
     <div className={props.className}>
       {React.cloneElement(props.children, {
-        onClick: () => toggle()
+        onClick: () => toggle(),
       })}
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={toggle} {...props} />
+        <Modal
+          contract={props.contract}
+          isOpen={isModalOpen}
+          onClose={toggle}
+          {...props}
+        />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ModalTrigger
+export default ModalTrigger;
