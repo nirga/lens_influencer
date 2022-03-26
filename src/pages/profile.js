@@ -11,6 +11,9 @@ import {
 } from "../utils/consts";
 import HuntedAccountABI from "../utils/HuntedAccount.json";
 import HuntedAccountFactoryABI from "../utils/HuntedAccountFactory.json";
+import TwitterVerifierABI from "../utils/TwitterVerifier.json";
+
+const TWITTER_VERIFIER_ADDRESS = '';
 
 function Profile() {
   const {
@@ -125,6 +128,8 @@ function Profile() {
   };
 
   const claimProfile = async () => {
+    const huntedAccountContract = huntedAccountData.value.contract;
+
     try {
       const { ethereum } = window;
 
@@ -132,8 +137,8 @@ function Profile() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        const huntedAccount = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
-        const twitterVerifier = new ethers.Contract(twitterVerifierAddress, TwitterVerifierABI.abi, signer);
+        const huntedAccount = new ethers.Contract(huntedAccountContract, HuntedAccountABI.abi, signer);
+        const twitterVerifier = new ethers.Contract(TWITTER_VERIFIER_ADDRESS, TwitterVerifierABI.abi, signer);
 
 
         twitterVerifier.on("VerificationStarted", (requestId) => {
@@ -143,7 +148,7 @@ function Profile() {
         twitterVerifier.on("VerificationCompleted", async (requestId, accountContract, isVerified) => {
           console.log(`Verification completed for request id: ${requestId}, account contract: ${accountContract}, result: ${isVerified}`);
 
-          if (accountContract == huntedAccountAddress && isVerified) {
+          if (accountContract == huntedAccountContract && isVerified) {
             // TODO: support switching currency & fee
             let currency = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'; // MATIC TOKEN
             let fee = 5;
