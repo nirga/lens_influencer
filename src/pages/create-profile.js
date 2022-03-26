@@ -10,7 +10,7 @@ function CreateProfile() {
   const onSubmit = data => createHuntedAccount(data);
 
   const [currentAccount, setCurrentAccount] = useState("");
-  const huntedAccountFactoryAddress = "0xfF3fB3eefdF9e74Ef897Ae45682802278eB7699a";
+  const huntedAccountFactoryAddress = "0xef6DD17781515f33AB26659DFE3971151A8eF1B7";
 
   const checkIfWalletIsConnected = async () => {
     try {

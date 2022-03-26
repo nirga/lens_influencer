@@ -88,7 +88,31 @@ function Profile() {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const claimProfile = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        console.log("Ethereum object exists")
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const HuntedAccountContract = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
+
+        // data.stakeValue as value laater
+        const options = {value: ethers.utils.parseEther("0.1")}
+        let stakedHuntAccount = await HuntedAccountContract.stake(options);
+        let awaitedStake = await stakedHuntAccount.wait()
+        console.log(awaitedStake)
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
     }
+  }
 
   useEffect(() => {
     checkIfWalletIsConnected();
@@ -103,11 +127,31 @@ function Profile() {
                   <div className="flex justify-between">
                     <p className="text-md mb-4">Hunting Profile</p>
                     <div className="flex">
-                      <button 
-                        className="bg-blue-600 text-white px-8 py-2 rounded-lg"
-                      >
-                          Claim
-                      </button>
+                      <div className="">
+                          {/*
+                          * If there is no currentAccount render this button
+                          */}
+                          {!currentAccount && (
+                              <div className="flex">
+                                  <button className="bg-blue-600 py-2 px-4 text-white rounded-md" onClick={connectWallet}>
+                                      Connect Wallet
+                                  </button>
+                                  <p className="mt-2 mx-2">Then u can</p>
+                                  <button disabled className="disabled:bg-blue-400 py-2 px-4 text-white rounded-md">
+                                    Claim
+                                  </button>
+                              </div>
+                          )}
+                          {currentAccount && (
+                            <button onClick={claimProfile}>
+                              <div className="flex">
+                                <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                                 Claim
+                                </p>
+                              </div>
+                            </button>
+                          )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex mt-4">
@@ -146,13 +190,31 @@ function Profile() {
                         />
                         {errors.stakeValue && <span className="text-red-500">stake value is required</span>}
                       </div>
-                      <button type="submit">
-                        <div className="flex">
-                          <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
-                              Stake
-                          </p>
-                        </div>
-                      </button>
+                      <div className="">
+                          {/*
+                          * If there is no currentAccount render this button
+                          */}
+                          {!currentAccount && (
+                              <div className="flex">
+                                  <button className="bg-blue-600 py-2 px-4 text-white rounded-md" onClick={connectWallet}>
+                                      Connect Wallet
+                                  </button>
+                                  <p className="mt-2 mx-2">Then u can</p>
+                                  <button disabled className="disabled:bg-blue-400 py-2 px-4 text-white rounded-md">
+                                      Stake
+                                  </button>
+                              </div>
+                          )}
+                          {currentAccount && (
+                            <button type="submit">
+                              <div className="flex">
+                                <p className="bg-blue-600 text-white px-8 py-2 rounded-lg">
+                                    Stake
+                                </p>
+                              </div>
+                            </button>
+                          )}
+                      </div>
                     </form>
                 </div>
             </div>
