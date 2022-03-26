@@ -13,7 +13,7 @@ function Profile() {
 
   const [currentAccount, setCurrentAccount] = useState("");
   // TODO: make dynamic!! Q: how -> get contract via twitterHandle possible?
-  const huntedAccountAddress = "0x470C409e47beea3b734a1fF5Bb21F794cC59753B";
+  const huntedAccountAddress = "0x844b22ddd26878bec013006b8fab518b29079443";
 
   function useQuery() {
     const { search } = useLocation();
@@ -95,19 +95,26 @@ function Profile() {
       const { ethereum } = window;
 
       if (ethereum) {
-        console.log("Ethereum object exists")
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-        const HuntedAccountContract = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
+        const huntedAccount = new ethers.Contract(huntedAccountAddress, HuntedAccountABI.abi, signer);
 
-        const options = {
-          
-        }
-        
-        let claimedAccount = await HuntedAccountContract.claimProfile(options);
-        
-        await claimedAccount.wait()
+        let tweetId = 'tweety'
+        console.log(`requesting verification for contract ${huntedAccountAddress}`);
+        const verifyTx = await huntedAccount.verifyProfileOwner(tweetId);
+        console.log("verify requested");
+        const receipt = await verifyTx.wait();
+        console.log("reciept arrived");
+        const events = receipt?.events;
+
+        console.log(events)
+
+        // TODO: support switching currency & fee
+        let currency = '0x0000000000000000000000000000000000001010'; // MATIC TOKEN
+        let fee = 5;
+
+        await huntedAccount.claimProfile(fee, currency);
 
         console.log("The account was successfully claimed!")
       } else {
