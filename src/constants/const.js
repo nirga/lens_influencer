@@ -1,5 +1,5 @@
 
-const HuntedAccountFactoryAddress = "0x844b22ddD26878bec013006B8fab518B29079443";
+const HuntedAccountFactoryAddress = "0xC51Ab34B0043d578B99A97A083CA635E02B6A10E";
 
 export {
     HuntedAccountFactoryAddress
