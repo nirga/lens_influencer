@@ -13,7 +13,8 @@ contract HuntedAccountFactory {
 
     event HuntedAccountCreated(address huntedAccount);
 
-    address[] public huntedAccounts;
+    address[] _huntedAccounts;
+    mapping(string => address) _twitterProfileToHuntedAccount;
 
     constructor(
         address lensHub,
@@ -43,9 +44,18 @@ contract HuntedAccountFactory {
         );
 
         address addr = address(instance);
-        huntedAccounts.push(addr);
+        _huntedAccounts.push(addr);
+        _twitterProfileToHuntedAccount[_twitterProfile] = addr;
         emit HuntedAccountCreated(address(instance));
 
         return addr;
+    }
+
+    function getHuntedAccounts() external view returns(address[] memory) {
+        return _huntedAccounts;
+    }
+
+    function getHuntedAccountByTwitterProfile(string memory twitterProfile) external view returns(address) {
+        return _twitterProfileToHuntedAccount[twitterProfile];
     }
 }

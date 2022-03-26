@@ -40,7 +40,7 @@ contract HuntedAccount is AccessControl {
     address immutable FEE_FOLLOW_MODULE;
     address immutable TWITTER_VERIFIER;
 
-    HuntedProfile _huntedProfile;
+    HuntedProfile public huntedProfile;
 
     string challenge;
     bytes32 verificationRequest;
@@ -50,7 +50,7 @@ contract HuntedAccount is AccessControl {
     uint256 public totalAmountStaked;
     uint256 public totalRoyaltiesWithdrawn;
     address _feesCurrency;
-    bool _profileHunted;
+    bool public profileHunted;
 
     // Emitted when amount of tokens had been staked by a hunter
     event Stake(
@@ -82,7 +82,7 @@ contract HuntedAccount is AccessControl {
         challenge = _challenge;
         totalAmountStaked = 0;
         royaltyFee = _royaltyFee;
-        _profileHunted = false;
+        profileHunted = false;
 
         DataTypes.CreateProfileData memory profile;
         profile.to = address(this);
@@ -91,10 +91,10 @@ contract HuntedAccount is AccessControl {
         MockProfileCreationProxy(MOCK_PROFILE_CREATION_PROXY)
             .proxyCreateProfile(profile);
         uint256 profileId = ILensHub(LENS_HUB).getProfileIdByHandle(
-            _huntedProfile.twitterProfile
+            _twitterProfile
         );
 
-        _huntedProfile = HuntedProfile(
+        huntedProfile = HuntedProfile(
             profileId,
             _twitterProfile,
             0,
@@ -104,7 +104,7 @@ contract HuntedAccount is AccessControl {
     }
 
     function stake() external payable {
-        require(!_profileHunted);
+        require(!profileHunted);
         require(msg.value > 0);
 
         hunters[msg.sender].amountStaked += msg.value;
@@ -122,7 +122,7 @@ contract HuntedAccount is AccessControl {
 
     function verifyProfileOwner(string memory tweetId) external {
         verificationRequest = TwitterVerifier(TWITTER_VERIFIER).verifyTweet(
-            _huntedProfile.twitterProfile,
+            huntedProfile.twitterProfile,
             tweetId,
             challenge
         );
@@ -132,7 +132,7 @@ contract HuntedAccount is AccessControl {
         require(_verifyProfileOwner());
 
         // Store the profile owner address
-        _huntedProfile.owner = msg.sender;
+        huntedProfile.owner = msg.sender;
         _feesCurrency = feesCurrency;
 
         // Create the profile with FeeFollowModule with this contract address as recipient and feesCurrency as currency
@@ -142,18 +142,16 @@ contract HuntedAccount is AccessControl {
             address(this)
         );
         ILensHub(LENS_HUB).setFollowModule(
-            _huntedProfile.profileId,
+            huntedProfile.profileId,
             FEE_FOLLOW_MODULE,
             followModuleData
         );
 
-        // TODO: Transfer the profile NFT to the profile owner?
-
         // Transfer the staked assets (in MATIC) to the profile owner
-        payable(_huntedProfile.owner).transfer(totalAmountStaked);
+        payable(huntedProfile.owner).transfer(totalAmountStaked);
 
         // Mark that the profile was hunted in-order to avoid future staking
-        _profileHunted = true;
+        profileHunted = true;
     }
 
     function withdrawOwnerRewards() external {
@@ -161,24 +159,24 @@ contract HuntedAccount is AccessControl {
 
         uint256 ownerAllTimeRoyalties = _allTimesRoyaltiesShare().owner;
         require(
-            ownerAllTimeRoyalties > _huntedProfile.amountWithdrawn,
+            ownerAllTimeRoyalties > huntedProfile.amountWithdrawn,
             "No royalties to withdraw"
         );
 
         uint256 amountToWithdraw = ownerAllTimeRoyalties -
-            _huntedProfile.amountWithdrawn;
+            huntedProfile.amountWithdrawn;
 
         IERC20(_feesCurrency).safeTransferFrom(
             address(this),
-            payable(_huntedProfile.owner),
+            payable(huntedProfile.owner),
             amountToWithdraw
         );
-        _huntedProfile.amountWithdrawn += amountToWithdraw;
+        huntedProfile.amountWithdrawn += amountToWithdraw;
 
         emit RoyaltiesWithdrawn(
-            _huntedProfile.owner,
+            huntedProfile.owner,
             amountToWithdraw,
-            _huntedProfile.amountWithdrawn
+            huntedProfile.amountWithdrawn
         );
     }
 
