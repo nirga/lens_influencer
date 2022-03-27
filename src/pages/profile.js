@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAsync } from "react-use";
+import { useAsyncRetry } from "react-use";
 import { useParams } from "react-router";
 import { ethers } from "ethers";
 import Navigation from "../components/navigation";
@@ -21,7 +21,7 @@ function Profile() {
   const { username } = useParams();
 
   const [loading, setLoading] = useState(false);
-  const huntedAccountData = useAsync(async () => {
+  const huntedAccountData = useAsyncRetry(async () => {
     const { ethereum } = window;
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
@@ -61,6 +61,7 @@ function Profile() {
         let awaitedStake = await stakedHuntAccount.wait();
         console.log(awaitedStake);
         setLoading(false);
+        huntedAccountData.retry();
       } else {
         console.log("Ethereum object doesn't exist!");
       }

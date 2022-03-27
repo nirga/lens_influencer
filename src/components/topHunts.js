@@ -32,7 +32,7 @@ function TopHunts() {
             <div className="pt-4">
                 <div className="bg-white w-full rounded-lg">
                     <div id="hunts" className="py-4 px-4">
-                        <p className="text-md font-bold mb-4">Top pending hunts</p>
+                        <p className="text-md font-bold mb-4">Top Hunts</p>
                         {!profiles.loading && profiles.value.map((profile) => (
                             <Link
                                 key={profile.twitterProfile}
